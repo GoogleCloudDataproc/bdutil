@@ -200,6 +200,9 @@ HDFS_DATA_DIRS_PERM='755'
 # 50030 for jobtracker, 50070 for namenode.
 MASTER_UI_PORTS=('50030' '50070')
 
+# If true, install JDK with compiler/tools in addition to just the JRE.
+INSTALL_JDK_DEVEL=false
+
 ###############################################################################
 
 ############################# bdutil settings #################################
@@ -271,6 +274,7 @@ function evaluate_late_variable_bindings() {
   normalize_boolean 'DEBUG_MODE'
   normalize_boolean 'OLD_HOSTNAME_SUFFIXES'
   normalize_boolean 'ENABLE_NFS_GCS_FILE_CACHE'
+  normalize_boolean 'INSTALL_JDK_DEVEL'
 
   # Generate WORKERS array based on PREFIX and NUM_WORKERS.
   local worker_suffix='w'

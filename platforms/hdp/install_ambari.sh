@@ -23,9 +23,6 @@ sed -i 's/\(^[^#]*\)SELINUX=enforcing/\1SELINUX=permissive/' /etc/selinux/config
 chkconfig iptables off
 service iptables stop
 
-# install jdk
-yum install -y java7-devel
-
 # Get Repo
 curl -O http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/${AMBARI_VERSION}/ambari.repo
 cp ambari.repo /etc/yum.repos.d/

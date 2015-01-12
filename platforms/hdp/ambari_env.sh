@@ -60,6 +60,9 @@ MASTER_ATTACHED_PD_SIZE_GB=1500
 # Default to 4 workers plus master for good spreading of master daemons.
 NUM_WORKERS=4
 
+# Install JDK with compiler/tools instead of just the minimal JRE.
+INSTALL_JDK_DEVEL=true
+
 function ambari_wait() {
   local condition="$1"
   local goal="$2"

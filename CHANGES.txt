@@ -12,6 +12,9 @@
   5. Moved SPARK_LOG_DIR from default of ${SPARK_HOME}/logs into
      /hadoop/spark/logs so that they reside on the large PD if it exists.
   6. Upgraded default Spark version to 1.2.0.
+  7. Added bdutil_env option INSTALL_JDK_DEVEL to optionally install full JDK
+     with compiler/tools instead of just the minimal JRE; set to 'true' in
+     single_node_env.sh and ambari_env.sh.
 
 
 1.0.1 - 2014-12-16
