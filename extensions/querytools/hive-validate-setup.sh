@@ -44,7 +44,7 @@ if [[ "${HIVE_CMD}" == '' ]]; then
 fi
 
 # Upload sample data.
-PARENT_DIR="/validate_hive_$(date +%s)"
+PARENT_DIR="/tmp/validate_hive_$(date +%s)"
 ${HADOOP_CMD} fs -mkdir ${PARENT_DIR}
 ${HADOOP_CMD} fs -put /etc/passwd ${PARENT_DIR}
 
