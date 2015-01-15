@@ -41,12 +41,8 @@ service iptables stop
 yum install ntp -y
 service ntpd start
 
-# provide java from openjdk 7
-install_application "openjdk-7-jdk" "java7-devel"
-JAVA_HOME=/etc/alternatives/java_sdk
-
 # install Apache Ambari YUM repository
-curl -osL /etc/yum.repos.d/ambari.repo ${AMBARI_REPO}
+curl -Ls -o /etc/yum.repos.d/ambari.repo ${AMBARI_REPO}
 
 # install Apache Ambari-agent
 yum install ambari-agent -y

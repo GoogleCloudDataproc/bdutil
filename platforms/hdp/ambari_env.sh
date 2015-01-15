@@ -31,9 +31,9 @@ MASTER_ATTACHED_PD_SIZE_GB=1500
 
 AMBARI_PUBLIC=false # Set to true if Hadoop Web UIs should be available by their public IP
 
-## Services passed to Ambari Blueprint. This can be reduced to what you need.
-AMBARI_SERVICES='FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS MAPREDUCE2
-    NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
+## Services passed to Ambari Blueprint. Update 'ambari_config.sh' if you want less services.
+AMBARI_SERVICES='FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS MAPREDUCE2'
+AMBARI_SERVICE+=' NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
 
 HDP_VERSION='2.2'
 AMBARI_VERSION='1.7.0'
@@ -49,6 +49,7 @@ import_env platforms/hdp/ambari_config.sh
 
 # Install JDK with compiler/tools instead of just the minimal JRE.
 INSTALL_JDK_DEVEL=true
+JAVA_HOME='/etc/alternatives/java_sdk'
 
 function ambari_wait() {
   local condition="$1"
@@ -76,6 +77,7 @@ function ambari_wait() {
 }
 
 normalize_boolean 'AMBARI_PUBLIC'
+normalize_boolean 'INSTALL_JDK_DEVEL'
 
 UPLOAD_FILES=(
   'hadoop2_env.sh'
@@ -91,13 +93,14 @@ GCS_CACHE_CLEANER_USER='hdfs'
 GCS_CACHE_CLEANER_LOG_DIRECTORY="/var/log/hadoop/${GCS_CACHE_CLEANER_USER}"
 GCS_CACHE_CLEANER_LOGGER='INFO,RFA'
 HADOOP_CONF_DIR="/etc/hadoop/conf"
-HADOOP_INSTALL_DIR="/usr/lib/hadoop"
+HADOOP_INSTALL_DIR="/usr/local/lib/hadoop"
 readonly DEFAULT_FS='hdfs'
 
 COMMAND_GROUPS+=(
   "ambari-setup:
      libexec/mount_disks.sh
      libexec/install_java.sh
+     libexec/setup_hadoop_user.sh
      platforms/hdp/install_ambari.sh
   "
 
