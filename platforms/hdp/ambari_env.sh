@@ -11,54 +11,41 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#######################################################################
 
-# Environment variables to be used in the local ghadoop as well as in setup
-# scripts running on remote VMs; this file will be used as a preamble to each
-# partial setup script being run on each VM.
+## Name:    ambari_env.sh
+## Usage:   Called from 'bdutil'. Do not run directly.
+##
+## Place variable overrides in `ambari_config.sh` instead of below
+#######################################################################
 
-# Import hadoop2_env.sh just for the GCS_CONNECTOR_JAR.
-import_env hadoop2_env.sh
+import_env hadoop2_env.sh # import for GCS_CONNECTOR_JAR settings
 
-# Require centos instead of debian.
-GCE_IMAGE='centos-6'
+NUM_WORKERS=4 # default to 4 workers plus one master for good spreading of master daemons
+GCE_IMAGE='centos-6' # bdutil for HDP is only tested with centos and rhel 6
 
-UPLOAD_FILES=(
-  'hadoop2_env.sh'
-  'libexec/hadoop_helpers.sh'
-  'platforms/hdp/configuration.json'
-  'platforms/hdp/create_blueprint.py'
-)
-
-HDP_VERSION='2.2'
-AMBARI_VERSION='1.7.0'
-AMBARI_SERVICES='FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS MAPREDUCE2
-    NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
-
-GCS_CACHE_CLEANER_USER='hdfs'
-GCS_CACHE_CLEANER_LOG_DIRECTORY="/var/log/hadoop/${GCS_CACHE_CLEANER_USER}"
-GCS_CACHE_CLEANER_LOGGER='INFO,RFA'
-HADOOP_CONF_DIR="/etc/hadoop/conf"
-HADOOP_INSTALL_DIR="/usr/lib/hadoop"
-
-## Tools for interacting with Ambari SERVER
-AMBARI_TIMEOUT=3600
-POLLING_INTERVAL=10
-
-AMBARI_API='http://localhost:8080/api/v1'
-AMBARI_CURL='curl -su admin:admin -H X-Requested-By:ambari'
-
-# Ambari admin on port 8080.
-MASTER_UI_PORTS=('8080')
-
-# Since we'll be using HDFS as the default_fs, set some reasonably beefy
-# disks.
-readonly DEFAULT_FS='hdfs'
+## Use HDFS and set the disk size
 USE_ATTACHED_PDS=true
 WORKER_ATTACHED_PDS_SIZE_GB=1500
 MASTER_ATTACHED_PD_SIZE_GB=1500
 
-# Default to 4 workers plus master for good spreading of master daemons.
-NUM_WORKERS=4
+AMBARI_PUBLIC=false # Set to true if Hadoop Web UIs should be available by their public IP
+
+## Services passed to Ambari Blueprint. This can be reduced to what you need.
+AMBARI_SERVICES='FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS MAPREDUCE2
+    NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
+
+HDP_VERSION='2.2'
+AMBARI_VERSION='1.7.0'
+AMBARI_REPO="http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/${AMBARI_VERSION}/ambari.repo"
+AMBARI_TIMEOUT=3600
+POLLING_INTERVAL=10
+AMBARI_API='http://localhost:8080/api/v1'
+AMBARI_CURL='curl -su admin:admin -H X-Requested-By:ambari'
+MASTER_UI_PORTS=('8080') ## Ambari administrative port
+
+## import configuration overrides
+import_env platforms/hdp/ambari_config.sh
 
 function ambari_wait() {
   local condition="$1"
@@ -68,9 +55,9 @@ function ambari_wait() {
 
   for (( i=0; i<${limit}; i++ )); do
     local status=$(bash -c "${condition}")
-    if [[ "${status}" == "${goal}" ]]; then
+    if [ "${status}" = "${goal}" ]; then
       break
-    elif [[ "${status}" == "${failed}" ]]; then
+    elif [ "${status}" = "${failed}" ]; then
       echo "Ambari operiation failed with status: ${status}" >&2
       return 1
     fi
@@ -78,12 +65,31 @@ function ambari_wait() {
     sleep ${POLLING_INTERVAL}
   done
 
-  if [[ ${i} -eq ${limit} ]]; then
+  if [ ${i} -eq ${limit} ]; then
     echo "ambari_wait did not finish within" \
         "'${AMBARI_TIMEOUT}' seconds. Exiting." >&2
     return 1
   fi
 }
+
+normalize_boolean 'AMBARI_PUBLIC'
+
+UPLOAD_FILES=(
+  'hadoop2_env.sh'
+  'libexec/hadoop_helpers.sh'
+  'platforms/hdp/ambari_config.sh'
+  'platforms/hdp/configuration.json'
+  'platforms/hdp/create_blueprint.py'
+  'platforms/hdp/resources/public-hostname-gcloud.sh'
+  'platforms/hdp/resources/thp-disable.sh'
+)
+
+GCS_CACHE_CLEANER_USER='hdfs'
+GCS_CACHE_CLEANER_LOG_DIRECTORY="/var/log/hadoop/${GCS_CACHE_CLEANER_USER}"
+GCS_CACHE_CLEANER_LOGGER='INFO,RFA'
+HADOOP_CONF_DIR="/etc/hadoop/conf"
+HADOOP_INSTALL_DIR="/usr/lib/hadoop"
+readonly DEFAULT_FS='hdfs'
 
 COMMAND_GROUPS+=(
   "ambari-setup:
