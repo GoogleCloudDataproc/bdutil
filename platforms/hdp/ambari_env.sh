@@ -47,6 +47,9 @@ MASTER_UI_PORTS=('8080') ## Ambari administrative port
 ## import configuration overrides
 import_env platforms/hdp/ambari_config.sh
 
+# Install JDK with compiler/tools instead of just the minimal JRE.
+INSTALL_JDK_DEVEL=true
+
 function ambari_wait() {
   local condition="$1"
   local goal="$2"
