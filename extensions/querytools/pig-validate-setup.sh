@@ -44,7 +44,7 @@ if [[ "${PIG_CMD}" == '' ]]; then
 fi
 
 # Upload sample data.
-PARENT_DIR="/validate_pig_$(date +%s)"
+PARENT_DIR="/tmp/validate_pig_$(date +%s)"
 ${HADOOP_CMD} fs -mkdir ${PARENT_DIR}
 ${HADOOP_CMD} fs -put /etc/passwd ${PARENT_DIR}
 
