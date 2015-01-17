@@ -104,6 +104,20 @@ ambari_wait "${AMBARI_CURL} ${AMBARI_API}/clusters/${PREFIX}/requests \
     | tr -cd '[:upper:]'" \
     'COMPLETED'
 
+# make a local lib dir for mapreduce. This method is not ideal. Will fix in future releases.
+NEW_CLASSPATH=$(/var/lib/ambari-server/resources/scripts/configs.sh get localhost ${PREFIX} mapred-site | grep -E '^"mapreduce.application.classpath"' | tr -d \" | awk '{print "/usr/local/lib/hadoop/lib/*,"$3}' | sed 's/,$//')
+/var/lib/ambari-server/resources/scripts/configs.sh set localhost ${PREFIX} mapred-site mapreduce.application.classpath ${NEW_CLASSPATH}
+
+sleep 10
+
+# restart services to get the new classpath
+for SERVICE in MAPREDUCE2 YARN; do
+    ${AMBARI_CURL} -i -X PUT -d '{"RequestInfo": {"context" :"Stop '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}' ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE}
+    ambari_wait "${AMBARI_CURL}  ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE} | grep '^ *\"state' | awk '{print \$3}'" '"INSTALLED"'
+    ${AMBARI_CURL} -i -X PUT -d '{"RequestInfo": {"context" :"Start '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}' ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE}
+    ambari_wait "${AMBARI_CURL}  ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE} | grep '^ *\"state' | awk '{print \$3}'" '"STARTED"'
+done
+
 # Set up HDFS /user directories.
 loginfo "Setting up HDFS /user directories."
 for USER in $(getent passwd | grep '/home' | cut -d ':' -f 1); do

@@ -37,15 +37,15 @@ AMBARI_SERVICE+=' NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
 
 HDP_VERSION='2.2'
 AMBARI_VERSION='1.7.0'
-AMBARI_REPO="http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/${AMBARI_VERSION}/ambari.repo"
 AMBARI_TIMEOUT=3600
 POLLING_INTERVAL=10
 AMBARI_API='http://localhost:8080/api/v1'
-AMBARI_CURL='curl -su admin:admin -H X-Requested-By:ambari'
 MASTER_UI_PORTS=('8080') ## Ambari administrative port
 
 ## import configuration overrides
 import_env platforms/hdp/ambari_config.sh
+AMBARI_CURL="curl -su admin:admin -H X-Requested-By:ambari"
+AMBARI_REPO="http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/${AMBARI_VERSION}/ambari.repo"
 
 # Install JDK with compiler/tools instead of just the minimal JRE.
 INSTALL_JDK_DEVEL=true
@@ -104,19 +104,20 @@ COMMAND_GROUPS+=(
      platforms/hdp/install_ambari.sh
   "
 
+  "install-ambari-components:
+     platforms/hdp/install_ambari_components.sh
+  "
+
   "install-gcs-connector-on-ambari:
      platforms/hdp/install_gcs_connector_on_ambari.sh
   "
 
-  "install-ambari-components:
-     platforms/hdp/install_ambari_components.sh
-  "
 )
 
 COMMAND_STEPS=(
   'ambari-setup,ambari-setup'
   'deploy-master-nfs-setup,*'
   'deploy-client-nfs-setup,deploy-client-nfs-setup'
-  'install-gcs-connector-on-ambari,install-gcs-connector-on-ambari'
   'install-ambari-components,*'
+  'install-gcs-connector-on-ambari,install-gcs-connector-on-ambari'
 )
