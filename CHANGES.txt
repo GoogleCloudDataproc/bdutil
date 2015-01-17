@@ -15,6 +15,7 @@
   7. Added bdutil_env option INSTALL_JDK_DEVEL to optionally install full JDK
      with compiler/tools instead of just the minimal JRE; set to 'true' in
      single_node_env.sh and ambari_env.sh.
+  8. Added python script to allocate memory more intelligently in Hadoop 2.
 
 
 1.0.1 - 2014-12-16

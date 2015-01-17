@@ -12,33 +12,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Environment variables to be used in the local ghadoop as well as in setup
-# scripts running on remote VMs; this file will be used as a preamble to each
-# partial setup script being run on each VM.
+# Extension providing a cluster with Apache Ambari installed and automatically
+# provisions and configures the cluster's software. This installs and configures
+# the GCS connector.
 
-# Import hadoop2_env.sh just for the GCS_CONNECTOR_JAR.
-import_env hadoop2_env.sh
+# Import the base Ambari installation
+import_env platforms/hdp/ambari_manual_env.sh
 
-# Require centos instead of debian.
-GCE_IMAGE='centos-6'
-
-UPLOAD_FILES=(
-  'hadoop2_env.sh'
-  'libexec/hadoop_helpers.sh'
-  'platforms/hdp/configuration.json'
-  'platforms/hdp/create_blueprint.py'
-)
-
-HDP_VERSION='2.2'
+###### You might want to change the following. #######
 AMBARI_VERSION='1.7.0'
+
+# The distribution to install on your cluster.
+AMBARI_STACK='HDP'
+AMBARI_STACK_VERSION='2.2'
+
+# The components of that distribution to install on the cluster.
+# Default is all but Apache Knox.
 AMBARI_SERVICES='FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS MAPREDUCE2
     NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
 
-GCS_CACHE_CLEANER_USER='hdfs'
-GCS_CACHE_CLEANER_LOG_DIRECTORY="/var/log/hadoop/${GCS_CACHE_CLEANER_USER}"
-GCS_CACHE_CLEANER_LOGGER='INFO,RFA'
-HADOOP_CONF_DIR="/etc/hadoop/conf"
-HADOOP_INSTALL_DIR="/usr/lib/hadoop"
+# Since we'll be using HDFS as the default_fs, set some reasonably beefy
+# disks.
+USE_ATTACHED_PDS=true
+WORKER_ATTACHED_PDS_SIZE_GB=1500
+MASTER_ATTACHED_PD_SIZE_GB=1500
+
+# Default to 4 workers plus master for good spreading of master daemons.
+NUM_WORKERS=4
+
+###### You probably don't want to edit below this. #######
+
+UPLOAD_FILES+=(
+  'platforms/hdp/ambari_manual_env.sh'
+  'platforms/hdp/configuration.json'
+  'platforms/hdp/create_blueprint.py'
+)
 
 ## Tools for interacting with Ambari SERVER
 AMBARI_TIMEOUT=3600
@@ -47,21 +55,6 @@ POLLING_INTERVAL=10
 AMBARI_API='http://localhost:8080/api/v1'
 AMBARI_CURL='curl -su admin:admin -H X-Requested-By:ambari'
 
-# Ambari admin on port 8080.
-MASTER_UI_PORTS=('8080')
-
-# Since we'll be using HDFS as the default_fs, set some reasonably beefy
-# disks.
-readonly DEFAULT_FS='hdfs'
-USE_ATTACHED_PDS=true
-WORKER_ATTACHED_PDS_SIZE_GB=1500
-MASTER_ATTACHED_PD_SIZE_GB=1500
-
-# Default to 4 workers plus master for good spreading of master daemons.
-NUM_WORKERS=4
-
-# Install JDK with compiler/tools instead of just the minimal JRE.
-INSTALL_JDK_DEVEL=true
 
 function ambari_wait() {
   local condition="$1"
@@ -89,25 +82,11 @@ function ambari_wait() {
 }
 
 COMMAND_GROUPS+=(
-  "ambari-setup:
-     libexec/mount_disks.sh
-     libexec/install_java.sh
-     platforms/hdp/install_ambari.sh
-  "
-
-  "install-gcs-connector-on-ambari:
-     platforms/hdp/install_gcs_connector_on_ambari.sh
-  "
-
   "install-ambari-components:
      platforms/hdp/install_ambari_components.sh
   "
 )
 
-COMMAND_STEPS=(
-  'ambari-setup,ambari-setup'
-  'deploy-master-nfs-setup,*'
-  'deploy-client-nfs-setup,deploy-client-nfs-setup'
-  'install-gcs-connector-on-ambari,install-gcs-connector-on-ambari'
+COMMAND_STEPS+=(
   'install-ambari-components,*'
 )
