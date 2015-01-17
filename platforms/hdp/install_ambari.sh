@@ -37,6 +37,13 @@ echo -e '\nsh /usr/local/sbin/thp-disable.sh || /bin/true' >> /etc/rc.local
 chkconfig iptables off
 service iptables stop
 
+## swappiness to 0
+sysctl -w vm.swappiness=0
+cat > /etc/sysctl.d/50-swappiness.conf <<-'EOF'
+## no more swapping
+vm.swappiness=0
+EOF
+
 ## install & start ntpd
 yum install ntp -y
 service ntpd start
