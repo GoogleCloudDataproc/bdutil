@@ -19,6 +19,10 @@
 ## Place variable overrides in `ambari_config.sh` instead of below
 #######################################################################
 
+########################################################################
+## There should be nothing to edit here, use ambari.conf              ##
+########################################################################
+
 import_env hadoop2_env.sh # import for GCS_CONNECTOR_JAR settings
 
 NUM_WORKERS=4 # default to 4 workers plus one master for good spreading of master daemons
@@ -28,6 +32,8 @@ GCE_IMAGE='centos-6' # bdutil for HDP is only tested with centos and rhel 6
 USE_ATTACHED_PDS=true
 WORKER_ATTACHED_PDS_SIZE_GB=1500
 MASTER_ATTACHED_PD_SIZE_GB=1500
+## import configuration overrides
+import_env platforms/hdp/ambari.conf
 
 AMBARI_PUBLIC=false # Set to true if Hadoop Web UIs should be available by their public IP
 
@@ -42,8 +48,6 @@ POLLING_INTERVAL=10
 AMBARI_API='http://localhost:8080/api/v1'
 MASTER_UI_PORTS=('8080') ## Ambari administrative port
 
-## import configuration overrides
-import_env platforms/hdp/ambari_config.sh
 AMBARI_CURL="curl -su admin:admin -H X-Requested-By:ambari"
 AMBARI_REPO="http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/${AMBARI_VERSION}/ambari.repo"
 
@@ -82,7 +86,7 @@ normalize_boolean 'INSTALL_JDK_DEVEL'
 UPLOAD_FILES=(
   'hadoop2_env.sh'
   'libexec/hadoop_helpers.sh'
-  'platforms/hdp/ambari_config.sh'
+  'platforms/hdp/ambari.conf'
   'platforms/hdp/configuration.json'
   'platforms/hdp/create_blueprint.py'
   'platforms/hdp/resources/public-hostname-gcloud.sh'
