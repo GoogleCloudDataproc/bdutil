@@ -18,13 +18,30 @@ GCS_CACHE_CLEANER_LOGGER='INFO,RFA'
 
 # URI of Hadoop tarball to be deployed. Must begin with gs:// or http(s)://
 # Use 'gsutil ls gs://hadoop-dist/hadoop-*.tar.gz' to list Google supplied options
-HADOOP_TARBALL_URI="gs://hadoop-dist/hadoop-2.4.1.tar.gz"
+HADOOP_TARBALL_URI="gs://hadoop-dist/hadoop-2.5.2.tar.gz"
 
 # Directory holding config files and scripts for Hadoop
 HADOOP_CONF_DIR="${HADOOP_INSTALL_DIR}/etc/hadoop"
 
 # Fraction of worker memory to be used for YARN containers
 NODEMANAGER_MEMORY_FRACTION=0.8
+
+# Decimal number controlling the size of map containers in memory and virtual
+# cores. Since by default Hadoop only supports memory based container
+# allocation, each map task will be given a container with roughly
+# (CORES_PER_MAP_TASK / <total-cores-on-node>) share of the memory available to
+# the NodeManager for containers. Thus an n1-standard-4 with CORES_PER_MAP_TASK
+# set to 2 would be able to host 4 / 2 = 2 map containers (and no other
+# containers). For more details see the script 'libexec/configure-mrv2-mem.py'.
+CORES_PER_MAP_TASK=1.0
+
+# Decimal number controlling the size of reduce containers in memory and virtual
+# cores. See CORES_PER_MAP_TASK for more details.
+CORES_PER_REDUCE_TASK=2.0
+
+# Decimal number controlling the size of application master containers in memory
+# and virtual cores. See CORES_PER_MAP_TASK for more details.
+CORES_PER_APP_MASTER=2.0
 
 # Connector with Hadoop AbstractFileSystem implemenation for YARN
 GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/gcs/gcs-connector-1.3.2-SNAPSHOT-hadoop2-20141222-135330.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1450821787&Signature=cQDn6fvv2Hyu58z9uzLQEIu42WyeSOY97lO8pXgZNq%2BEX5YGW8VjBWP1YzBX1Slkufc6USrb4009TZhSu%2BQATsZwYa7jOGh0sLSsHEmCPvUI3HrENag8rvvhefLnxGx6vrFcA2fOskivUOp5ZTyh1K0sCDBqjoSLTbGIFXeuNr0='
@@ -44,6 +61,7 @@ if [[ -n "${BDUTIL_DIR}" ]]; then
   UPLOAD_FILES=($(find ${BDUTIL_DIR}/conf/hadoop2 -name '*template.xml'))
   UPLOAD_FILES+=(${BDUTIL_DIR}/libexec/hadoop_helpers.sh)
 fi
+UPLOAD_FILES+=("libexec/configure_mrv2_mem.py")
 
 # Use Hadoop 2 specific start scripts
 COMMAND_GROUPS+=(

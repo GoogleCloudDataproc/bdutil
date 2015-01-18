@@ -36,6 +36,8 @@ CUSTOM_CONFIGURAITION_FILE='configuration.json'
 CLUSTER_TEMPLATE_FILE='/tmp/cluster_template.json'
 CONFIGURATION_RECOMMENDATION_FILE='/tmp/configuration_recommendation.json'
 HOST_RECOMMENDATION_FILE='/tmp/host_recommendation.json'
+RECOMMENDATION_ENDPOINT="${AMBARI_API}/stacks/${AMBARI_STACK}/\
+versions/${AMBARI_STACK_VERSION}/recommendations"
 JSON_SERVICES_ARRAY="[ \"$(sed 's/ /\",\"/g' <<< ${AMBARI_SERVICES})\" ]"
 JSON_HOST_ARRAY="[ \"$(hostname --fqdn)\",
     $(xargs -n 1 host -Tta <<< ${WORKERS[@]} \
@@ -53,8 +55,7 @@ ambari_wait "${AMBARI_CURL} ${AMBARI_API}/hosts | grep -c host_name" \
 
 # Get recommendations
 loginfo "Getting configuration recommendation from ambari-server."
-${AMBARI_CURL} -X POST \
-    ${AMBARI_API}/stacks/HDP/versions/${HDP_VERSION}/recommendations \
+${AMBARI_CURL} -X POST ${RECOMMENDATION_ENDPOINT} \
     -d "{
           \"recommend\" : \"configurations\",
           \"services\" : ${JSON_SERVICES_ARRAY},
@@ -63,8 +64,7 @@ ${AMBARI_CURL} -X POST \
     > ${CONFIGURATION_RECOMMENDATION_FILE}
 
 loginfo "Getting host group recommendation from ambari-server."
-${AMBARI_CURL} -X POST \
-    ${AMBARI_API}/stacks/HDP/versions/${HDP_VERSION}/recommendations \
+${AMBARI_CURL} -X POST ${RECOMMENDATION_ENDPOINT} \
     -d "{
           \"recommend\" : \"host_groups\",
           \"services\" : ${JSON_SERVICES_ARRAY},

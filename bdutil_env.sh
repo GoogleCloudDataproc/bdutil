@@ -153,6 +153,16 @@ GCS_CACHE_CLEANER_LOG_DIRECTORY='/hadoop/logs'
 # be an appender already defined in Hadoop's log4j.properties file.
 GCS_CACHE_CLEANER_LOGGER='INFO,DRFA'
 
+# Decimal number controlling the number of map slots on each node as a ratio of
+# the number of virtual cores on the node. e.g. an n1-standard-4 with
+# CORES_PER_MAP_TASK set to 2 would have 4 / 2 = 2 map slots.
+CORES_PER_MAP_TASK=1.0
+
+# Decimal number controlling the number of reduce slots on each node as a ratio
+# of the number of virtual cores on the node. e.g. an n1-standard-4 with
+# CORES_PER_REDUCE_TASK set to 2 would have 4 / 2 = 2 reduce slots.
+CORES_PER_REDUCE_TASK=1.0
+
 # Options to be passed to TaskTracker child JVMs.
 JAVAOPTS='-Xms1024m -Xmx2048m'
 
