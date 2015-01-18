@@ -1,5 +1,5 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
-#
+
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -11,49 +11,66 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#######################################################################
 
-## Name:    ambari_env.sh
-## Usage:   Called from 'bdutil'. Do not run directly.
+
+## ambari_env.sh
 ##
-## Place variable overrides in `ambari_config.sh` instead of below
-#######################################################################
+## Purpose: called directly from 'bdutil' to provision
+##  Hortonworks Data Platform Clusters on the google CLoud Platform
+##
+## Usage: see README.md
+
 
 ########################################################################
 ## There should be nothing to edit here, use ambari.conf              ##
 ########################################################################
 
-import_env hadoop2_env.sh # import for GCS_CONNECTOR_JAR settings
+# import for GCS_CONNECTOR_JAR settings
+import_env hadoop2_env.sh
 
+## Defaults to override bdutil_env.sh
 NUM_WORKERS=4 # default to 4 workers plus one master for good spreading of master daemons
 GCE_IMAGE='centos-6' # bdutil for HDP is only tested with centos and rhel 6
+MASTER_UI_PORTS=('8080') ## Ambari administrative port
 
-## Use HDFS and set the disk size
-USE_ATTACHED_PDS=true
-WORKER_ATTACHED_PDS_SIZE_GB=1500
-MASTER_ATTACHED_PD_SIZE_GB=1500
 ## import configuration overrides
 import_env platforms/hdp/ambari.conf
 
-AMBARI_PUBLIC=false # Set to true if Hadoop Web UIs should be available by their public IP
+## Use HDFS
+readonly DEFAULT_FS='hdfs'
 
-## Services passed to Ambari Blueprint. Update 'ambari_config.sh' if you want less services.
-AMBARI_SERVICES='FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS MAPREDUCE2'
-AMBARI_SERVICE+=' NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
+## Attach disks
+USE_ATTACHED_PDS=${USE_ATTACHED_PDS-true}
+WORKER_ATTACHED_PDS_SIZE_GB=${WORKER_ATTACHED_PDS_SIZE_GB-1500}
+MASTER_ATTACHED_PD_SIZE_GB=${MASTER_ATTACHED_PD_SIZE_GB-1500}
 
-HDP_VERSION='2.2'
-AMBARI_VERSION='1.7.0'
+## If 'true', URLs for web interfaces, such as the jobtracker will be
+## linked from Ambari with the public IP.
+## Default is false. You will need to SSH to reach the host in this case.
+AMBARI_PUBLIC=${AMBARI_PUBLIC-false}
+
+## Services passed to Ambari for generating blueprint recommendations
+AMBARI_SERVICES="${AMBARI_SERVICES-FALCON FLUME GANGLIA HBASE HDFS HIVE
+ KAFKA KERBEROS MAPREDUCE2 NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER}"
+AMBARI_SERVICES='FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS MAPREDUCE2
+    NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
+
+HDP_VERSION="${HDP_VERSION-2.2}"
+AMBARI_API="${AMBARI_API-http://localhost:8080/api/v1}"
+AMBARI_CURL="curl -su admin:admin -H X-Requested-By:ambari"
+AMBARI_VERSION="1.7.0"
+AMBARI_REPO=${AMBARI_REPO-http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/${AMBARI_VERSION}/ambari.repo}
+
+## Install JDK with compiler/tools instead of the minimal JRE.
+INSTALL_JDK_DEVEL=true
+JAVA_HOME="${JAVA_HOME-/etc/alternatives/java_sdk}"
+
+normalize_boolean 'AMBARI_PUBLIC'
+normalize_boolean 'INSTALL_JDK_DEVEL'
+
+## timing for ambari_wait()
 AMBARI_TIMEOUT=3600
 POLLING_INTERVAL=10
-AMBARI_API='http://localhost:8080/api/v1'
-MASTER_UI_PORTS=('8080') ## Ambari administrative port
-
-AMBARI_CURL="curl -su admin:admin -H X-Requested-By:ambari"
-AMBARI_REPO="http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/${AMBARI_VERSION}/ambari.repo"
-
-# Install JDK with compiler/tools instead of just the minimal JRE.
-INSTALL_JDK_DEVEL=true
-JAVA_HOME='/etc/alternatives/java_sdk'
 
 function ambari_wait() {
   local condition="$1"
@@ -80,8 +97,6 @@ function ambari_wait() {
   fi
 }
 
-normalize_boolean 'AMBARI_PUBLIC'
-normalize_boolean 'INSTALL_JDK_DEVEL'
 
 UPLOAD_FILES=(
   'hadoop2_env.sh'
@@ -98,7 +113,6 @@ GCS_CACHE_CLEANER_LOG_DIRECTORY="/var/log/hadoop/${GCS_CACHE_CLEANER_USER}"
 GCS_CACHE_CLEANER_LOGGER='INFO,RFA'
 HADOOP_CONF_DIR="/etc/hadoop/conf"
 HADOOP_INSTALL_DIR="/usr/local/lib/hadoop"
-readonly DEFAULT_FS='hdfs'
 
 COMMAND_GROUPS+=(
   "ambari-setup:
@@ -115,7 +129,6 @@ COMMAND_GROUPS+=(
   "install-gcs-connector-on-ambari:
      platforms/hdp/install_gcs_connector_on_ambari.sh
   "
-
 )
 
 COMMAND_STEPS=(
