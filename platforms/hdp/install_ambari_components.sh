@@ -107,16 +107,3 @@ for USER in $(getent passwd | grep '/home' | cut -d ':' -f 1); do
   sudo -u hdfs hdfs dfs -mkdir -p "/user/${USER}"
   sudo -u hdfs hdfs dfs -chown "${USER}" "/user/${USER}"
 done
-
-loginfo "adding /usr/local/lib/hadoop/lib to mapreduce.application.classpath."
-NEW_CLASSPATH=$(/var/lib/ambari-server/resources/scripts/configs.sh get localhost ${PREFIX} mapred-site | grep -E '^"mapreduce.application.classpath"' | tr -d \" | awk '{print "/usr/local/lib/hadoop/lib/*,"$3}' | sed 's/,$//')
-/var/lib/ambari-server/resources/scripts/configs.sh set localhost ${PREFIX} mapred-site mapreduce.application.classpath ${NEW_CLASSPATH}
-sleep 10
-
-loginfo "restarting services for classpath change to take affect."
-for SERVICE in YARN MAPREDUCE2; do
-    ambari_service_stop
-    ambari_check_requests_completed
-    ambari_service_start
-    ambari_check_requests_completed
-done

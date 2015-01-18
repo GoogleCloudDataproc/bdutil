@@ -22,6 +22,7 @@
 ##   * adds that lib dir to relevant classpaths
 
 if (( ${INSTALL_GCS_CONNECTOR} )) ; then
+loginfo "installing GCS_CONNECTOR_JAR on each node"
   LIB_JARS_DIR="${HADOOP_INSTALL_DIR}/lib"
   mkdir -p ${LIB_JARS_DIR}
 
