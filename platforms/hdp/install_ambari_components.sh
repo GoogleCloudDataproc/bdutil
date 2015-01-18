@@ -90,19 +90,15 @@ loginfo "Posting ${BLUEPRINT_FILE} to ambari-server."
 ${AMBARI_CURL} -X POST -d @${BLUEPRINT_FILE} \
     ${AMBARI_API}/blueprints/${BLUEPRINT_NAME}
 
+# very hacky functions to get to the json, should convert to python.
+# too bad 'jq' isn't in the standard CentOS packages
 loginfo "Provisioning ambari cluster."
 ${AMBARI_CURL} -X POST -d @${CLUSTER_TEMPLATE_FILE} \
     ${AMBARI_API}/clusters/${PREFIX}
 
 # Poll for completion
 loginfo "Waiting for ambari cluster creation to complete (may take awhile)."
-ambari_wait "${AMBARI_CURL} ${AMBARI_API}/clusters/${PREFIX}/requests \
-    | grep -o 'http://.*/requests/[0-9]*' \
-    | xargs ${AMBARI_CURL} \
-    | grep request_status \
-    | uniq \
-    | tr -cd '[:upper:]'" \
-    'COMPLETED'
+ambari_wait_requests_completed
 
 # Set up HDFS /user directories.
 loginfo "Setting up HDFS /user directories."

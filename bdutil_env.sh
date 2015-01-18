@@ -85,7 +85,7 @@ WORKER_ATTACHED_PDS_TYPE='pd-standard'
 MASTER_ATTACHED_PD_TYPE='pd-standard'
 
 # Bash array of service-account scopes to include in the created VMs.
-# List of available scopes can be obtained with 'gcloud instances create --help'
+# List of available scopes can be obtained with 'gcloud compute instances create --help'
 # and looking under the description for "--scopes". Must at least include
 # 'storage-full' for gsutil and the GCS connector to work.
 GCE_SERVICE_ACCOUNT_SCOPES=('storage-full')
