@@ -90,33 +90,34 @@ loginfo "Posting ${BLUEPRINT_FILE} to ambari-server."
 ${AMBARI_CURL} -X POST -d @${BLUEPRINT_FILE} \
     ${AMBARI_API}/blueprints/${BLUEPRINT_NAME}
 
+# very hacky functions to get to the json, should convert to python.
+# too bad 'jq' isn't in the standard CentOS packages
+function ambari_check_requests_completed() {
+    AWK_PROG="{if (\$2~/^href$/ && \$4~/^http:\/\/[^ \t\/]*\/api\/v1\/clusters\/[^ \t\/]*\/requests\/[0-9]*$/) print \$4}"
+    ambari_wait "${AMBARI_CURL} ${AMBARI_API}/clusters/${PREFIX}/requests | awk -F'\"' '${AWK_PROG}' \
+        | xargs ${AMBARI_CURL} \
+        | awk -F'\"' '{if (\$2~/^request_status$/) print \$4}' \
+        | uniq" \
+        'COMPLETED'
+}
+
+function ambari_service_stop() {
+    AMBARI_REQUEST='{"RequestInfo": {"context" :"Stop '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}'
+    ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE}
+}
+
+function ambari_service_start() {
+    AMBARI_REQUEST='{"RequestInfo": {"context" :"Start '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}'
+    ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE}
+}
+
 loginfo "Provisioning ambari cluster."
 ${AMBARI_CURL} -X POST -d @${CLUSTER_TEMPLATE_FILE} \
     ${AMBARI_API}/clusters/${PREFIX}
 
 # Poll for completion
 loginfo "Waiting for ambari cluster creation to complete (may take awhile)."
-ambari_wait "${AMBARI_CURL} ${AMBARI_API}/clusters/${PREFIX}/requests \
-    | grep -o 'http://.*/requests/[0-9]*' \
-    | xargs ${AMBARI_CURL} \
-    | grep request_status \
-    | uniq \
-    | tr -cd '[:upper:]'" \
-    'COMPLETED'
-
-# make a local lib dir for mapreduce. This method is not ideal. Will fix in future releases.
-NEW_CLASSPATH=$(/var/lib/ambari-server/resources/scripts/configs.sh get localhost ${PREFIX} mapred-site | grep -E '^"mapreduce.application.classpath"' | tr -d \" | awk '{print "/usr/local/lib/hadoop/lib/*,"$3}' | sed 's/,$//')
-/var/lib/ambari-server/resources/scripts/configs.sh set localhost ${PREFIX} mapred-site mapreduce.application.classpath ${NEW_CLASSPATH}
-
-sleep 10
-
-# restart services to get the new classpath
-for SERVICE in MAPREDUCE2 YARN; do
-    ${AMBARI_CURL} -i -X PUT -d '{"RequestInfo": {"context" :"Stop '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}' ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE}
-    ambari_wait "${AMBARI_CURL}  ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE} | grep '^ *\"state' | awk '{print \$3}'" '"INSTALLED"'
-    ${AMBARI_CURL} -i -X PUT -d '{"RequestInfo": {"context" :"Start '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}' ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE}
-    ambari_wait "${AMBARI_CURL}  ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE} | grep '^ *\"state' | awk '{print \$3}'" '"STARTED"'
-done
+ambari_check_requests_completed
 
 # Set up HDFS /user directories.
 loginfo "Setting up HDFS /user directories."
@@ -124,4 +125,17 @@ for USER in $(getent passwd | grep '/home' | cut -d ':' -f 1); do
   echo "Creating HDFS directory for user '${USER}'"
   sudo -u hdfs hdfs dfs -mkdir -p "/user/${USER}"
   sudo -u hdfs hdfs dfs -chown "${USER}" "/user/${USER}"
+done
+
+loginfo "adding /usr/local/lib/hadoop/lib to mapreduce.application.classpath."
+NEW_CLASSPATH=$(/var/lib/ambari-server/resources/scripts/configs.sh get localhost ${PREFIX} mapred-site | grep -E '^"mapreduce.application.classpath"' | tr -d \" | awk '{print "/usr/local/lib/hadoop/lib/*,"$3}' | sed 's/,$//')
+/var/lib/ambari-server/resources/scripts/configs.sh set localhost ${PREFIX} mapred-site mapreduce.application.classpath ${NEW_CLASSPATH}
+sleep 10
+
+loginfo "restarting services for classpath change to take affect."
+for SERVICE in YARN MAPREDUCE2; do
+    ambari_service_stop
+    ambari_check_requests_completed
+    ambari_service_start
+    ambari_check_requests_completed
 done

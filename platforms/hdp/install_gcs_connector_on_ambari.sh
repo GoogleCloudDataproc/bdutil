@@ -1,5 +1,7 @@
-# Copyright 2014 Google Inc. All Rights Reserved.D
-#
+#!/usr/bin/env bash
+
+# Copyright 2014 Google Inc. All Rights Reserved.
+
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,9 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Downloads the relevant gcs-connector-<version>.jar, before Hadoop has actually
-# been installed; this way, the initial startup of Hadoop daemons can already
-# load the gcs-connector as needed so that we don't need to restart.
+
+## install_gcs_connector_on_ambari.sh
+## This file:
+##   * downloads the relevant gcs-connector-<version>.jar
+##   * installs into a local lib dir
+##   * adds that lib dir to relevant classpaths
 
 if (( ${INSTALL_GCS_CONNECTOR} )) ; then
   LIB_JARS_DIR="${HADOOP_INSTALL_DIR}/lib"
@@ -28,6 +33,5 @@ if (( ${INSTALL_GCS_CONNECTOR} )) ; then
 
   # link gcs connector into main hadoop lib dir
   source <(grep "^export HADOOP_HOME=" /etc/hadoop/conf.empty/hadoop-env.sh) || true
-  echo "${HADOOP_HOME}/lib" || true
-  echo ln -sv "${LOCALJAR}" "/usr/hdp/current/hadoop-client/lib/" || true
+  ln -sv "${LOCAL_JAR}" "${HADOOP_HOME}/lib/"
 fi
