@@ -62,40 +62,40 @@ Common configuration changes in `platforms/hdp/ambari_config.sh`:
     * Default: false
 
 
-### Access the Ambari Dashboard
+### Access cluster via SSH
 
-Ambari is available on the master node at http://theip:8080/
-
-Options for accessing:
-    - SSH tunnel:
-      - `gcloud compute config-ssh`
-      - `ssh -L 8080:127.0.0.1:8080 hadoop-m.us-central1-a.my-project-00`
-      - It will then be avilable at http://localhost:8080/
-    - Directly:
-      - Add a firewall rule to the project:
-        - Can be done from the Google Cloud Platform console
-        - Or with command such as this which whitelists your current IP:
-          - `gcloud compute firewall-rules create whitelist --project my-project-00 --allow tcp icmp --network default --source-ranges `curl -s4 icanhazip.com`/32`
-      - Get the master nodes IP:
-        - `./bdutil shell`
-        - or, `gcloud --project my-project-00 compute instances list`
-      - open http://thatip:8080/
-
-### Access the instances with SSH:
-
-  - `./bdutil shell`
-  - Or update your SSH config:
+Several options:
+  - `./bdutil shell` <- this is preferred
+  - 0r with an updated SSH config:
     - `gcloud compute config-ssh`
     - `ssh hadoop-m.us-central1-a.my-project-00`
-  - Or use gcloud tools:
+  - 0r use gcloud tools:
     - `gcloud --project=my-project-00 compute ssh --zone=us-central1-a hadoop-m`
 
-<!--
-Process data from a public Google Cloud Storage bucket:
-# hadoop jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-mapreduce-examples.jar wordcount gs://genomics-public-data/1000-genomes/vcf/ALL.chrY.phase1_samtools_si.20101123.snps.low_coverage.genotypes.vcf output
 
-hadoop fs -tail output/part-r-00000
--->
+### Access Ambari other services
+
+Ambari is available at http://hadoop-m:8080/ .
+You can access it and other services in a few ways:
+  - a) quick SSH tunnel
+  - b) SOCKS proxy (provided by bdutil)
+  - c) directly if your Google Cloud project’s firewall rules permit
+
+a) Quick SSH tunnel _(assuming nothing is listening locally on 8080)_
+  - Update your SSH config: `gcloud compute config-ssh`
+  - Create the tunnel: `ssh -L 8080:127.0.0.1:8080 hadoop-m` (tab complete to get the hostname or check ~/.ssh/config)
+  - open http://127.0.0.1:8080/
+
+b) SOCKS proxy:
+  * bdutil will create a proxy on port 1080: `./bdutil socksproxy`
+  * Update your browser or system to use the SOCKS proxy.
+  * You’ll then have full access to the cluster.
+    * For example, Ambari Server will be at http://hadoop-m:8080/
+
+c) directly by opening the Google firewall:
+  * Update the network firewall rules for your project from the Google Cloud Platform Console
+  * Or issue a command such as this which whitelists your current IP: `gcloud compute firewall-rules create whitelist --project my-project-00 --allow tcp icmp --network default --source-ranges `curl -s4 icanhazip.com`/32`
+
 
 Common issues
 =============
