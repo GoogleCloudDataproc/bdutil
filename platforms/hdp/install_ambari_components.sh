@@ -92,32 +92,13 @@ ${AMBARI_CURL} -X POST -d @${BLUEPRINT_FILE} \
 
 # very hacky functions to get to the json, should convert to python.
 # too bad 'jq' isn't in the standard CentOS packages
-function ambari_check_requests_completed() {
-    AWK_PROG="{if (\$2~/^href$/ && \$4~/^http:\/\/[^ \t\/]*\/api\/v1\/clusters\/[^ \t\/]*\/requests\/[0-9]*$/) print \$4}"
-    ambari_wait "${AMBARI_CURL} ${AMBARI_API}/clusters/${PREFIX}/requests | awk -F'\"' '${AWK_PROG}' \
-        | xargs ${AMBARI_CURL} \
-        | awk -F'\"' '{if (\$2~/^request_status$/) print \$4}' \
-        | uniq" \
-        'COMPLETED'
-}
-
-function ambari_service_stop() {
-    AMBARI_REQUEST='{"RequestInfo": {"context" :"Stop '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}'
-    ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE}
-}
-
-function ambari_service_start() {
-    AMBARI_REQUEST='{"RequestInfo": {"context" :"Start '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}'
-    ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE}
-}
-
 loginfo "Provisioning ambari cluster."
 ${AMBARI_CURL} -X POST -d @${CLUSTER_TEMPLATE_FILE} \
     ${AMBARI_API}/clusters/${PREFIX}
 
 # Poll for completion
 loginfo "Waiting for ambari cluster creation to complete (may take awhile)."
-ambari_check_requests_completed
+ambari_wait_requests_completed
 
 # Set up HDFS /user directories.
 loginfo "Setting up HDFS /user directories."
