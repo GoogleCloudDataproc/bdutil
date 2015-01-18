@@ -20,7 +20,7 @@
 # File hadoop-confg.sh
 HADOOP_CONFIGURE_CMD=''
 HADOOP_CONFIGURE_CMD=$(find ${HADOOP_LIBEXEC_DIR} ${HADOOP_PREFIX} \
-    /home/hadoop /usr/*/hadoop* -name hadoop-config.sh | head -n 1)
+    /home/hadoop /usr/*/hadoop* /usr/*/current/hadoop* -name hadoop-config.sh | head -n 1)
 
 # If hadoop-config.sh has been found source it
 if [[ -n "${HADOOP_CONFIGURE_CMD}" ]]; then
@@ -28,8 +28,8 @@ if [[ -n "${HADOOP_CONFIGURE_CMD}" ]]; then
   . ${HADOOP_CONFIGURE_CMD}
 fi
 
-HADOOP_CMD=$(find ${HADOOP_PREFIX} /home/hadoop /usr/*/hadoop* -wholename '*/bin/hadoop' | head -n 1)
-PIG_CMD=$(find ${HADOOP_PREFIX} /home/hadoop /usr/*/pig* -wholename '*/bin/pig' | head -n 1)
+HADOOP_CMD=$(find ${HADOOP_PREFIX} /home/hadoop /usr/*/hadoop* /usr/*/current/hadoop* -wholename '*/bin/hadoop' | head -n 1)
+PIG_CMD=$(find ${HADOOP_PREFIX} /home/hadoop /usr/*/pig* /usr/*/current/pig* -wholename '*/bin/pig' | head -n 1)
 
 #if it is still empty then dont run the tests
 if [[ "${HADOOP_CMD}" == '' ]]; then

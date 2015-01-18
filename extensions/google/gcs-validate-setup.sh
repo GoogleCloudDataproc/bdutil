@@ -18,8 +18,9 @@
 
 
 ###############################################################################
-# Runs the following jobs to validate a hadoop cluster; suitable for running
-# over ssh automatically/without a terminal.
+# Runs the following jobs to validate a hadoop cluster using gs:// as the
+# storage instead of hdfs; suitable for running over ssh automatically/without
+# a terminal.
 ## teragen
 ## terasort
 ## teravalidate
@@ -71,7 +72,7 @@ if [[ "${HADOOP_EXAMPLES_JAR}" == '' ]]; then
 fi
 
 #dir where to store the data on hdfs. The data is relative of the users home dir on hdfs.
-PARENT_DIR="validate_deploy_$(date +%s)"
+PARENT_DIR="gs:///validate_deploy_$(date +%s)"
 TERA_GEN_OUTPUT_DIR="${PARENT_DIR}/tera_gen_data"
 TERA_SORT_OUTPUT_DIR="${PARENT_DIR}/tera_sort_data"
 TERA_VALIDATE_OUTPUT_DIR="${PARENT_DIR}/tera_validate_data"
