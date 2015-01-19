@@ -15,28 +15,52 @@ Deploying Hadoop clusters with **Google's bdutil & Apache Ambari**.
 ## Before you start
 
 * Follow instructions at https://cloud.google.com/hadoop/
+
 	- Google Cloud Platform account & project configured
-	- Installed & configured Google Cloud SDK
-	- Downloaded bdutil
+	- Installed & configured Google Cloud SDK: https://cloud.google.com/hadoop/
+
+    ```
+    brew cask install google-cloud-sdk      ## lazy way to install on OSX
+    # for other operating systems see: http://cloud.google.com/hadoop/
+    
+    gcloud auth login                       ## authenticate to google
+    gsutil mb -p hdp-00 gs://hdp-00         ## create a Google Cloud Storage bucket
+    gcloud config set project my-hdp-00     ## make it our default project
+    ```
+    
+	- Download bdutil from https://cloud.google.com/hadoop/
+
+    ```
+    git clone https://github.com/seanorama/bdutil/   # using my own repo for this demonstration
+    cd bdutil
+    ```
 
 ## Tutorial
 
 1. Deploy the cluster:
 
-    `./bdutil -e platforms/hdp/ambari_env.sh deploy`  
+    ```
+    edit platforms/hdp/ambari.conf                    # not required by worth looking at
+    
+    ./bdutil -e platforms/hdp/ambari_env.sh deploy    # deploy the cluster
+    ```
 
-2. Administer the cluster:
+1. Administer the cluster:
 
     ```
     gcloud compute config-ssh            # updates our SSH config
+    
     ssh -L 8080:127.0.0.1:8080 hadoop-m	 # quick tunnel to Apache Ambari
+    
     open http://localhost:8080/			 # open Ambari in your browser
     ```
 
-3. Use the cluster
+1. Use the cluster
 
     ```
-    MapReduce
+    open https://cloud.google.com/hadoop/running-a-mapreduce-job
+    
+    ./bdutil shell < ./doc/tutorial-mapreduce.md
     ```
 
 1. Delete the cluster
@@ -64,30 +88,3 @@ Deploying Hadoop clusters with **Google's bdutil & Apache Ambari**.
 >   - Apache Ambari for provisioning, managing and monitoring the cluster.
 >   - Ambari's "blueprint recommendation" system will take care of all the configuration for you resulting in a fully configured
 >   - Hortonworks Data Platform cluster.
-> 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-d
-
-
-
-
-
-
