@@ -69,25 +69,3 @@ Deploying Hadoop clusters with **Google's bdutil & Apache Ambari**.
 1. Delete the cluster
 
     `./bdutil -e platforms/hdp/ambari_env.sh delete`
-
------
-
-### Sean's speaking notes
-
-> Hi. I'm Sean Roberts, Partner Solutions Engineer with Hortonworks. In this recording I'll show how to easily deploy & use Hadoop on the Google Cloud Platform.
->
-> Thanks to the engineering partnership between Google & Hortonworks you can deploy the Hortonworks Data Platform in a single command.
->
-> Let's start with an overview of the technology.
->
-> - Infrastructure will be provided by the Google Cloud Platform:
->   - Google Compute Engine for our machines
->   - Google Cloud Storage for cluster configuration files & will also be integrated into HDP to be used as a filesystem like HDFS.
->
-> - The Hadoop distribution will be Hortonworks Data Platform, the 100% open & enterprise grade Hadoop distribution.
-> - Apache Ambari’s will handle the installation, configuration and ongoing use of Hadoop.
-> - Last but most important, is the only command we’ll need to run today: Google’s bdutil.
-    - bdutil will leverage
->   - Apache Ambari for provisioning, managing and monitoring the cluster.
->   - Ambari's "blueprint recommendation" system will take care of all the configuration for you resulting in a fully configured
->   - Hortonworks Data Platform cluster.
