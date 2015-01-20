@@ -32,6 +32,11 @@ NUM_WORKERS=4
 # Use CentOS instead of Debian.
 GCE_IMAGE='centos-6'
 
+# Create attached storage
+USE_ATTACHED_PDS=true
+WORKER_ATTACHED_PDS_SIZE_GB=1500
+MASTER_ATTACHED_PD_SIZE_GB=1500
+
 # Install the full Java JDK. Most services need it
 INSTALL_JDK_DEVEL=true
 JAVA_HOME=/etc/alternatives/java_sdk
@@ -51,12 +56,6 @@ normalize_boolean 'AMBARI_PUBLIC'
 
 # Since we'll be using HDFS as the default_fs, set some reasonably beefy
 # disks.
-USE_ATTACHED_PDS=${USE_ATTACHED_PDS:-true}
-WORKER_ATTACHED_PDS_SIZE_GB=${WORKER_ATTACHED_PDS_SIZE_GB:-1500}
-MASTER_ATTACHED_PD_SIZE_GB=${MASTER_ATTACHED_PD_SIZE_GB:-1500}
-
-# Install JDK with compiler/tools instead of just the minimal JRE.
-normalize_boolean 'INSTALL_JDK_DEVEL'
 
 readonly DEFAULT_FS='hdfs'
 GCS_CACHE_CLEANER_USER='hdfs'
