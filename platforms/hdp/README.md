@@ -119,7 +119,7 @@ You now have a full HDP cluster. If you are new to Hadoop check the tutorials at
 
 For command-line based jobs, 'bdutil' gives methods for passing through commands: https://cloud.google.com/hadoop/running-a-mapreduce-job
 
-For example: `./bdutil shell < ./doc/tutorial-mapreduce.md`
+For example: `./bdutil shell < ./extensions/google/gcs-validate-setup.sh`
 
 Common issues
 -------------
