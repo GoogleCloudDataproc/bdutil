@@ -1,104 +1,129 @@
-bdutil
-======
+# ![Hortonworks Data Platform](http://hortonworks.com/wp-content/themes/hortonworks/images/layout/header/hortonworks-logo.png) + ![Google Cloud Platform](https://cloud.google.com/_static/images/gcp-logo.png)
 
-Utility for creating a Google Compute Engine cluster and installing, configuring, and calling Hadoop and Hadoop-compatible software on it.
-More details here: https://cloud.google.com/hadoop/setting-up-a-hadoop-cluster
+Hortonworks Data Platform (HDP) on Google Cloud Platform
+========================================================
 
-Requirements
-------------
+Deploying Hadoop clusters with **Google's bdutil & Apache Ambari**.
 
-### Create a Google Cloud Platform account
+Resources
+---------
 
-  - Open https://console.developers.google.com/
-  - If not already present, open an account
+* [Google documentation](https://cloud.google.com/hadoop/) for bdutil & Hadoop on Google Cloud Platform.
+* [Latest source on Github](https://github.com/GoogleCloudPlatform/bdutil). Use & improve.
+* [Documentation & quickstart for using HDP with bdutil](https://github.com/GoogleCloudPlatform/bdutil/platforms/hdp/README.md).
+* [The text you're looking at right now](https://github.com/seanorama/bdutil/blob/master/platforms/hdp/README.md).
+
+Before you start
+----------------
+
+#### Create a Google Cloud Platform account
+  - open https://console.developers.google.com/
+    - sign-in or create an account
     - The "free trial" can be used though will be limited in performance
       - _It's quota permits permits 4 small instances (n1-standard-2). For performance/production it's recommended to upgrade the account and/or request more quota to enable larger instance types (n1-standard-4 or larger)._
 
-### Configure Google Cloud SDK
+#### Create a Google Cloud Project
 
-  - Install [Google Cloud SDK](https://cloud.google.com/sdk/) on your workstation or control machine
-  - In a terminal execute: `gcloud auth login`
+* Open https://console.developers.google.com/
+* Open 'Create Project' and fill in the details.
+  - As an example, this document uses 'hdp-00'
+- Within the project, open 'APIs & auth -> APIs'. Then enable:
+  - Google Compute Engine
+  - Google Cloud Storage
+  - Google Cloud Storage JSON API
 
-### Create and prep a Google Cloud Project
+#### Configure Google Cloud SDK & Google Cloud Storage
 
-  - Open https://console.developers.google.com/
-  - Open 'Create Project' and fill in the details.
-    - This document uses: 'my-project-00'
-  - Within the project, open 'APIs & auth -> APIs'. Then enable:
-    - Google Compute Engine
-    - Google Cloud Storage
-    - Google Cloud Storage JSON API
-  - Create Storage Container: `gsutil mb -p my-project-00 gs://my-project-00`
-  - _(optional)_ Set the default project: `gcloud config set project my-project-00`
+* Install [Google Cloud SDK](https://cloud.google.com/sdk/) locally
+* Configure the SDK:
 
-Installation & Configuration
-----------------------------
+  ```
+  gcloud auth login                   ## authenticate to Google cloud
+  gcloud config set project hdp-00`   ## set the default project
+  gsutil mb -p hdp-00 gs://hdp-00`    ## create a cloud storage bucket
+  ```
 
-* Get bdutil:
-  * `git clone https://github.com/GoogleCloudPlatform/bdutil; cd bdutil`
-  * or https://github.com/GoogleCloudPlatform/bdutil/archive/master.zip
+#### Download bdutil
 
-* Set your bucket & container in:
-  * `bdutil_env.sh` or `platforms/hdp/ambari.conf`
-  * or with these switches to `bdutil`: `-b my-project-00 -p my-project-00`
-* Nothing else is required, but you should have a look at `platforms/hdp/ambari.conf`
+  * Latest packaged: https://cloud.google.com/hadoop/
+  * Latest sorce from GitHub: `git clone https://github.com/GoogleCloudPlatform/bdutil; cd bdutil`
 
-Usage
------
+Quick start
+-----------
 
-### Deploy & Delete the cluster
-* Deploy cluster: `./bdutil -e platforms/hdp/ambari_env.sh deploy`
-* Delete cluster: `./bdutil -e platforms/hdp/ambari_env.sh delete`
-  * ensure to use the same switches as the deploy
+1. Set your project & bucket from above in `bdutil_env.sh`
 
-Common switches, see 'bdutil --help' for more:
-  * -n 4 # number of worker nodes to deploy. Default: 4
-  * -m n1-standard-4 # machine type. Default: n1-standard-4
+1. Deploy or Delete the cluster: __see './bdutil --help' for more details__
 
-Common configuration changes in `platforms/hdp/ambari_config.sh`:
-  * AMBARI_SERVICES= # This defines the Hadoop Services which are deployed
-    * Default: FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS MAPREDUCE2 NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER
-  * AMBARI_PUBLIC= # By default, links to services in Ambari will use the internal (10.) IP & names. Setting this to true will have it use the public IP.
-    * Default: false
+* Deploy: `./bdutil -e platforms/hdp/ambari_env.sh deploy`
+* Delete: `./bdutil -e platforms/hdp/ambari_env.sh delete`
+  * when deleting, ensure to use the same switches/configuration as the deploy
 
+Configuration
+-------------
 
-### Access cluster via SSH
+* You can deploy without setting any configuration, but you should have a look at `platforms/hdp/ambari.conf`
 
-Several options:
-  - `./bdutil shell` <- this is preferred
-  - 0r with an updated SSH config:
-    - `gcloud compute config-ssh`
-    - `ssh hadoop-m.us-central1-a.my-project-00`
-  - 0r use gcloud tools:
-    - `gcloud --project=my-project-00 compute ssh --zone=us-central1-a hadoop-m`
+Here are some of the defaults to consider:
 
+  ```
+  GCE_ZONE='us-central1-a'           ## the zone/region to deploy in
+  NUM_WORKERS=4                      ## the number of worker nodes. Total
+                                     ##     is NUM_WORKERS + 1 master
+  GCE_MACHINE_TYPE='n1-standard-4'   ## the machine type
+  WORKER_ATTACHED_PDS_SIZE_GB=1500   ## 1500GB attached to each worker
+  MASTER_ATTACHED_PD_SIZE_GB=1500    ## 1500GB attached to master
+  
+  ## The Hortonworks Data Platform services which will be installed.
+  ##   This is nearly the entire stack
+  AMBARI_SERVICES='FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS
+        MAPREDUCE2 NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
 
-### Access Ambari other services
+  AMBARI_PUBLIC=false                ## Services listed on internal hostname
+                                     ##     , not public IP. Need a socks proxy or tunnel to access
+  ```
 
-Ambari is available at http://hadoop-m:8080/ .
-You can access it and other services in a few ways:
-  - a) quick SSH tunnel
-  - b) SOCKS proxy (provided by bdutil)
-  - c) directly if your Google Cloud project’s firewall rules permit
+Use the cluster
+---------------
 
-a) Quick SSH tunnel _(assuming nothing is listening locally on 8080)_
-  - Update your SSH config: `gcloud compute config-ssh`
-  - Create the tunnel: `ssh -L 8080:127.0.0.1:8080 hadoop-m` (tab complete to get the hostname or check ~/.ssh/config)
-  - open http://127.0.0.1:8080/
+### SSH
 
-b) SOCKS proxy:
-  * bdutil will create a proxy on port 1080: `./bdutil socksproxy`
-  * Update your browser or system to use the SOCKS proxy.
-  * You’ll then have full access to the cluster.
-    * For example, Ambari Server will be at http://hadoop-m:8080/
+* You'll have immediate SSH access with: `./bdutil shell`
+* Or update your SSH config with: `gcloud compute-config-ssh` 
 
-c) directly by opening the Google firewall:
-  * Update the network firewall rules for your project from the Google Cloud Platform Console
-  * Or issue a command such as this which whitelists your current IP: `gcloud compute firewall-rules create whitelist --project my-project-00 --allow tcp icmp --network default --source-ranges `curl -s4 icanhazip.com`/32`
+#### Access Ambari & other services
 
+a. With a local socks proxy:
+
+  ```
+  ./bdutil socksproxy             # opens a socks proxy to the cluster at localhost:1080
+
+  # I use the Chrome extension 'Proxy SwitchySharp' to automatically detect when connecting to Google Compute
+  open http://hadoop-m:8080/      # My Google Chrome has an extension which automatically uses the proxy
+  ```
+
+b. Or a local SSH tunnel
+
+  ```
+  gcloud compute config-ssh                  # updates our SSH config for direct SSH access to all nodes
+  ssh -L 8080:127.0.0.1:8080 hadoop-m  <TAB> # quick tunnel to Apache Ambari
+  open http://localhost:8080/                # open Ambari in your browser
+  ```
+
+c. Or open a firewall rule from the Google Cloud Platform control panel
+  - this will whitelist your current IP:  `gcloud compute firewall-rules create whitelist --project my-project-00 --allow tcp icmp --network default --source-ranges `curl -s4 icanhazip.com`/32`
+
+#### Use the cluster
+
+You now have a full HDP cluster. If you are new to Hadoop check the tutorials at http://hortonworks.com/.
+
+For command-line based jobs, 'bdutil' gives methods for passing through commands: https://cloud.google.com/hadoop/running-a-mapreduce-job
+
+For example: `./bdutil shell < ./doc/tutorial-mapreduce.md`
 
 Common issues
-=============
+-------------
+
 
 ### Tip for 'Free Trial' users, those with limited quota, or simply looking to see a cluster without spending much
 
