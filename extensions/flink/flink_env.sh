@@ -1,9 +1,19 @@
-# TODO add licence
-
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS-IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # This file contains environment-variable overrides to be used in conjunction
 # with bdutil_env.sh in order to deploy a Hadoop + Flink cluster.
 # Usage: ./bdutil deploy -e extensions/flink/flink_env.sh
+
 
 # In standalone mode, Flink runs the job manager and the task managers (workers)
 # on the cluster without using YARN containers. Flink also supports YARN
