@@ -75,3 +75,5 @@ EOF
 
 # Assign ownership of everything to the 'hadoop' user.
 chown -R hadoop:hadoop /home/hadoop/
+# Make the Flink log directory writable
+chmod 777 ${FLINK_INSTALL_DIR}/log
