@@ -10,17 +10,17 @@ Resources
 
 * [Google documentation](https://cloud.google.com/hadoop/) for bdutil & Hadoop on Google Cloud Platform.
 * [Latest source on Github](https://github.com/GoogleCloudPlatform/bdutil). Use & improve.
-* [Documentation & quickstart for using HDP with bdutil](https://github.com/GoogleCloudPlatform/bdutil/platforms/hdp/README.md).
-* [The text you're looking at right now](https://github.com/seanorama/bdutil/blob/master/platforms/hdp/README.md).
+* [Video Tutorial](http://youtu.be/raCtS84Vb6w)
 
 Before you start
 ----------------
 
 #### Create a Google Cloud Platform account
+
   - open https://console.developers.google.com/
-    - sign-in or create an account
-    - The "free trial" can be used though will be limited in performance
-      - _It's quota permits permits 4 small instances (n1-standard-2). For performance/production it's recommended to upgrade the account and/or request more quota to enable larger instance types (n1-standard-4 or larger)._
+  - sign-in or create an account
+  - The "free trial" [may be used](#common-issues)
+  
 
 #### Create a Google Cloud Project
 
@@ -39,8 +39,8 @@ Before you start
 
   ```
   gcloud auth login                   ## authenticate to Google cloud
-  gcloud config set project hdp-00`   ## set the default project
-  gsutil mb -p hdp-00 gs://hdp-00`    ## create a cloud storage bucket
+  gcloud config set project hdp-00    ## set the default project
+  gsutil mb -p hdp-00 gs://hdp-00     ## create a cloud storage bucket
   ```
 
 #### Download bdutil
@@ -73,14 +73,15 @@ Here are some of the defaults to consider:
   GCE_MACHINE_TYPE='n1-standard-4'   ## the machine type
   WORKER_ATTACHED_PDS_SIZE_GB=1500   ## 1500GB attached to each worker
   MASTER_ATTACHED_PD_SIZE_GB=1500    ## 1500GB attached to master
-  
+
   ## The Hortonworks Data Platform services which will be installed.
   ##   This is nearly the entire stack
   AMBARI_SERVICES='FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS
         MAPREDUCE2 NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
 
-  AMBARI_PUBLIC=false                ## Services listed on internal hostname
-                                     ##     , not public IP. Need a socks proxy or tunnel to access
+  AMBARI_PUBLIC=false                ## Services listed on internal
+                                     ##   hostname not public IP. Need
+                                     ##   a socks proxy or tunnel to access
   ```
 
 Use the cluster
@@ -89,7 +90,7 @@ Use the cluster
 ### SSH
 
 * You'll have immediate SSH access with: `./bdutil shell`
-* Or update your SSH config with: `gcloud compute-config-ssh` 
+* Or update your SSH config with: `gcloud compute-config-ssh`
 
 #### Access Ambari & other services
 
@@ -111,7 +112,6 @@ b. Or a local SSH tunnel
   ```
 
 c. Or open a firewall rule from the Google Cloud Platform control panel
-  - this will whitelist your current IP:  `gcloud compute firewall-rules create whitelist --project my-project-00 --allow tcp icmp --network default --source-ranges `curl -s4 icanhazip.com`/32`
 
 #### Use the cluster
 
@@ -125,13 +125,13 @@ Common issues
 -------------
 
 
-### Tip for 'Free Trial' users, those with limited quota, or simply looking to see a cluster without spending much
+### 'Free Trial' users or those with limited quota
 
-This is not recommended for performance or production use.
+You may use bdutil with HDP by lowering the machine type & count below the recommended specifications. To use the default configuration, upgrade the account from a free trial.
 
-Set the following in `platforms/hdp/ambari.conf`
-  * GCE_MACHINE_TYPE='n1-standard-2`
-  * WORKERS=3 # or less
+  * In 'platforms/hdp/ambari.conf':
+    * GCE_MACHINE_TYPE='n1-standard-2'
+    * WORKERS=3 # or less
+  * Or at the command-line provide these switches to the 'deploy' & 'delete':
+    * Deploy cluster: `-n 3 -m n1-standard-2`
 
-Or set that configuration at  command-line:
-* Deploy cluster: `./bdutil -e platforms/hdp/ambari_env.sh -n 3 -m n1-standard-2 deploy`
