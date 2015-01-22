@@ -73,6 +73,25 @@ taskmanager.tmp.dirs: ${FLINK_TASKMANAGER_TEMP_DIR}
 fs.hdfs.hadoopconf: ${HADOOP_CONF_DIR}
 EOF
 
+# Find the Hadoop lib dir so and add its gcs-connector to the Flink lib dir
+set +o nounset
+if [[ -r "${HADOOP_INSTALL_DIR}/libexec/hadoop-config.sh" ]]; then
+  . "${HADOOP_INSTALL_DIR}/libexec/hadoop-config.sh"
+fi
+if [[ -n "${HADOOP_COMMON_LIB_JARS_DIR}" ]] && \
+    [[ -n "${HADOOP_PREFIX}" ]]; then
+  LIB_JARS_DIR="${HADOOP_PREFIX}/${HADOOP_COMMON_LIB_JARS_DIR}"
+else
+  LIB_JARS_DIR="${HADOOP_INSTALL_DIR}/lib"
+fi
+set -o nounset
+# Get jar name and path
+GCS_JARNAME=$(grep -o '[^/]*\.jar' <<< ${GCS_CONNECTOR_JAR})
+LOCAL_GCS_JAR="${LIB_JARS_DIR}/${GCS_JARNAME}"
+# create link in Flink lib dir
+ln -s "${LOCAL_GCS_JAR}" "${FLINK_INSTALL_DIR}/lib/"
+
+
 # Assign ownership of everything to the 'hadoop' user.
 chown -R hadoop:hadoop /home/hadoop/
 # Make the Flink log directory writable
