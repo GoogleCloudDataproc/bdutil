@@ -53,16 +53,16 @@ NUM_WORKERS=2
 # If true, tries to attach the PDs listed in WORKER_ATTACHED_PDS and
 # MASTER_ATTACHED_PD to their respective VMs as a non-boot volume. By default,
 # the PDS will be named after the instance names with a "-pd" suffix.
-USE_ATTACHED_PDS=false
+USE_ATTACHED_PDS=${USE_ATTACHED_PDS:-false}
 
 # Only applicable if USE_ATTACHED_PDS is true; if so, this variable controls
 # whether the PDs should be created explicitly during deployment. The PDs
 # must not already exist.
-CREATE_ATTACHED_PDS_ON_DEPLOY=true
+CREATE_ATTACHED_PDS_ON_DEPLOY=${CREATE_ATTACHED_PDS_ON_DEPLOY:-true}
 
 # Only applicable if USE_ATTACHED_PDS is true; if so, this variable controls
 # whether the PDs should be deleted explicitly when deleting the cluster.
-DELETE_ATTACHED_PDS_ON_DELETE=true
+DELETE_ATTACHED_PDS_ON_DELETE=${DELETE_ATTACHED_PDS_ON_DELETE:-true}
 
 # Only applicable during deployment if USE_ATTACHED_PDS is true and
 # CREATE_ATTACHED_PDS_ON_DEPLOY is true. Specifies the size, in GB, of
