@@ -128,6 +128,29 @@ For example: `./bdutil shell < ./extensions/google/gcs-validate-setup.sh`
 Questions
 ---------
 
+### Re-use of attached persistent disks across deployments
+
+`bdutil` supports keeping persistent disks _(aka `ATTACHED_PDS`)_ online when deleting machines. It can then deploy a new cluster using the same disks without lose of data, **assuming the number of workers is the same**.
+
+The basic commands are below. Find more detail in [TEST.md](./TEST.md).
+
+```
+## deploy the cluster & create disks
+./bdutil -e platforms/hdp/ambari_env.sh deploy
+
+## delete the cluster but don't delete the disks
+export DELETE_ATTACHED_PDS_ON_DELETE=false
+./bdutil -e platforms/hdp/ambari_env.sh delete
+
+## create with existing disks
+export CREATE_ATTACHED_PDS_ON_DEPLOY=false
+./bdutil -e platforms/hdp/ambari_env.sh deploy
+```
+
+Another would be to use `gs://` _(Google Cloud Storage)_ instead of `hdfs://` in your Hadoop jobs, even setting it as the default. Or backup HDFS to Google Cloud Storage before cluster deletion.
+
+**Note**: Hortonworks can't guarantee the safety of data throughout this process. You should always take care when manipulating disks and have backups where necessary.
+
 ### What are the built-in storage options?
 
 By default, HDFS is on **attached disks** _('pd-standard' or 'pd-ssd')_.
@@ -149,30 +172,9 @@ You may use bdutil with HDP by lowering the machine type & count below the recom
   * Or at the command-line provide these switches to the 'deploy' & 'delete':
     * Deploy cluster: `-n 3 -m n1-standard-2`
 
-
-<!-- TO BE UNCOMMENTED AFTER RESOLUTION OF: https://github.com/seanorama/bdutil/issues/5
-
-### Can attached persistent disks & data be kept when deleting the machiens in a cluster, and then re-used when the machines are redeployed?
-
-- Yes, if the number of instances matches across deployments.
-- More documentation is needed, but until the redemployment test in [TEST.md](./TEST.md) shows the process.
-- Essentially you set these variables at the right time:
-
-By setting a few variables at the appropriate times, you can keep attached storage online when deleting the machines, and then redeploy the machines at a later time.
-- This needs to be documented further, 
-
-Another option would be to use gs:// instead of hdfs://, or to offload to gs:// before deleting the cluster.
--->
-
-
 Known Issues
 ------------
 
-### Re-use of attached persistent disks across deployments
-
-`bdutil` supports keeping attached persistent disks _(aka `ATTACHED_PDS`)_ online when deleting machines. It can then deploy machines using the same attached storage and data.
-
-When reploying HDP in this fashion, the NameNode will fail to format. More details in [this issue](https://github.com/seanorama/bdutil/issues/5).
 
 Feedback & Issues
 -----------------

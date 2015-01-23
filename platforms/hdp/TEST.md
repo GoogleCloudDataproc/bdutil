@@ -69,7 +69,6 @@ ${bdutil} deploy
 
 ## generate some data onto HDFS, and dont’ delete it
 echo "hadoop fs -mkdir redeploy-validation.tmp" | ${bdutil} shell
-
 ## if you want more data than that:
 #${bdutil} -u hadoop-validate-setup.sh run_command -- \
 #    sudo -u "$(whoami)" TERA_CLEANUP_SKIP=true TERA_GEN_NUM_RECORDS=100000 ./hadoop-validate-setup.sh
@@ -86,7 +85,7 @@ export CREATE_ATTACHED_PDS_ON_DEPLOY=false
 ${bdutil} deploy
 
 ## check that the ‘validate_...’ dir is there
-echo "hadoop fs -ls" | ${bdutil} -e ${environment} shell
+echo "hadoop fs -ls" | ${bdutil} shell
 
 ## delete everything to cleanup this testing
 export DELETE_ATTACHED_PDS_ON_DELETE=true

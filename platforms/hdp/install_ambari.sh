@@ -28,6 +28,14 @@ setenforce 0
 sed -i 's/\(^[^#]*\)SELINUX=enforcing/\1SELINUX=disabled/' /etc/selinux/config
 sed -i 's/\(^[^#]*\)SELINUX=permissive/\1SELINUX=disabled/' /etc/selinux/config
 
+## workaround as some components of Ambari & the HDP stack are hard
+##   coded to /var/lib/hdfs
+if [ ! -d /hadoop/hdfs ]; then mkdir /hadoop/hdfs; fi
+ln -sf /hadoop/hdfs /var/lib/
+
+## sudo should not require a tty. This is fixed in rhel/centos 7+
+echo 'Defaults !requiretty' > /etc/sudoers.d/888-dont-requiretty
+
 ## disable transparent_hugepages
 cp -a ./thp-disable.sh /usr/local/sbin/
 sh /usr/local/sbin/thp-disable.sh || /bin/true
