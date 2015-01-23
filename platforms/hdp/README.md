@@ -10,7 +10,11 @@ Resources
 
 * [Google documentation](https://cloud.google.com/hadoop/) for bdutil & Hadoop on Google Cloud Platform.
 * [Latest source on Github](https://github.com/GoogleCloudPlatform/bdutil). Use & improve.
-* [Video Tutorial](http://youtu.be/raCtS84Vb6w)
+
+Video Tutorial
+--------------
+
+[<img src="http://img.youtube.com/vi/raCtS84Vb6w/0.jpg" width="320px" />](http://www.youtube.com/watch?v=raCtS84Vb6w)
 
 Before you start
 ----------------
@@ -19,7 +23,7 @@ Before you start
 
   - open https://console.developers.google.com/
   - sign-in or create an account
-  - The "free trial" [may be used](#common-issues)
+  - The "free trial" [may be used](#questions)
   
 
 #### Create a Google Cloud Project
@@ -121,17 +125,58 @@ For command-line based jobs, 'bdutil' gives methods for passing through commands
 
 For example: `./bdutil shell < ./extensions/google/gcs-validate-setup.sh`
 
-Common issues
--------------
+Questions
+---------
 
+### What are the built-in storage options?
 
-### 'Free Trial' users or those with limited quota
+By default, HDFS is on **attached disks** _('pd-standard' or 'pd-ssd')_.
+- the size and type can be set in `ambari.conf`
+ 
+The rest of the system resides on the **local boot disk**, unless configured otherwise.
+ 
+**Google Cloud Storage** is also available with **`gs://`**. It can be used anywhere that `hdfs://` is available, such as but not limited to mapreduce & `hadoop fs` operations.
+
+  - Note: Adding an additional slash (`gs:///`) will allow you to use the default bucket (defined at cluster build) without needing to specific it.
+
+### Use with the Google _Free Trial_
 
 You may use bdutil with HDP by lowering the machine type & count below the recommended specifications. To use the default configuration, upgrade the account from a free trial.
 
   * In 'platforms/hdp/ambari.conf':
-    * GCE_MACHINE_TYPE='n1-standard-2'
-    * WORKERS=3 # or less
+    * `GCE_MACHINE_TYPE='n1-standard-2'`
+    * `WORKERS=3 # or less`
   * Or at the command-line provide these switches to the 'deploy' & 'delete':
     * Deploy cluster: `-n 3 -m n1-standard-2`
+
+
+<!-- TO BE UNCOMMENTED AFTER RESOLUTION OF: https://github.com/seanorama/bdutil/issues/5
+
+### Can attached persistent disks & data be kept when deleting the machiens in a cluster, and then re-used when the machines are redeployed?
+
+- Yes, if the number of instances matches across deployments.
+- More documentation is needed, but until the redemployment test in [TEST.md](./TEST.md) shows the process.
+- Essentially you set these variables at the right time:
+
+By setting a few variables at the appropriate times, you can keep attached storage online when deleting the machines, and then redeploy the machines at a later time.
+- This needs to be documented further, 
+
+Another option would be to use gs:// instead of hdfs://, or to offload to gs:// before deleting the cluster.
+-->
+
+
+Known Issues
+------------
+
+### Re-use of attached persistent disks across deployments
+
+`bdutil` supports keeping attached persistent disks _(aka `ATTACHED_PDS`)_ online when deleting machines. It can then deploy machines using the same attached storage and data.
+
+When reploying HDP in this fashion, the NameNode will fail to format. More details in [this issue](https://github.com/seanorama/bdutil/issues/5).
+
+Feedback & Issues
+-----------------
+
+ - <http://github.com/seanorama/bdutil/>
+ - <http://twitter.com/seano>
 
