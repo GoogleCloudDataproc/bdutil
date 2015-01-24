@@ -138,8 +138,9 @@ function start_with_retry_jobtracker() {
 # TODO: Also check HDFS and any other filesystem we expect to work.
 function check_filesystem_accessibility() {
   if (( ${INSTALL_GCS_CONNECTOR} )) ; then
-    local fs_cmd="${HADOOP_INSTALL_DIR}/bin/hadoop fs"
-    if ${fs_cmd} -test -d gs://${CONFIGBUCKET}; then
+    local hdfs_superuser=$(get_hdfs_superuser)
+    local dfs_cmd="sudo -i -u ${hdfs_superuser} hadoop fs"
+    if ${dfs_cmd} -test -d gs://${CONFIGBUCKET}; then
       return 0
     else
       local errcode=$?
