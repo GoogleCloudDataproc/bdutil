@@ -3,13 +3,15 @@
 Hortonworks Data Platform (HDP) on Google Cloud Platform
 ========================================================
 
-Deploying Hadoop clusters with **Google's bdutil & Apache Ambari**.
+This extension, to Google's [bdutil](https://github.com/GoogleCloudPlatform/bdutil), provides support for deploying the [Hortonworks Data Platform](http://hortonworks.com/) with a single command. 
+
+The extension utilizes Apache Ambari's Blueprint Recommendations to fully configure the cluster without the need for manual configuration.
 
 Resources
 ---------
 
 * [Google documentation](https://cloud.google.com/hadoop/) for bdutil & Hadoop on Google Cloud Platform.
-* [Latest source on Github](https://github.com/GoogleCloudPlatform/bdutil). Use & improve.
+* [Source on Github](https://github.com/GoogleCloudPlatform/bdutil). Open to the community and welcoming your collaboration.
 
 Video Tutorial
 --------------
@@ -128,7 +130,20 @@ For example: `./bdutil shell < ./extensions/google/gcs-validate-setup.sh`
 Questions
 ---------
 
-### Re-use of attached persistent disks across deployments
+### Can I set/override Hadoop configurations during deployment?
+
+For adding/overriding Hadoop configurations, update `configuration.json` and then  use the extension as documented. And contribute back if you think the defaults should be changed.
+
+### Can I deploy HDP manually using Ambari and/or use my own Ambari Blueprints?
+
+Yes. Set `ambari_manual_env.sh` as your environment _(with the -e switch)_ instead of `ambari_env.sh`. That will configure Ambari across the cluster & handle all HDP prerequisites, but not trigger the Ambari Blueprints which install HDP.
+
+Note that these steps will not be taken for you:
+
+  - initialization of HDFS /user directories _(Check the function `initialize_hdfs_dirs` in `../../libexec/hadoop_helpers.sh`)_
+  - installation of the GCS connector. _(Check `./install_gcs_connector_on_ambari.sh` & `./update_ambari_config.sh`)_
+
+### Can I re-use the attached persistent disk(s) across deployments?
 
 `bdutil` supports keeping persistent disks _(aka `ATTACHED_PDS`)_ online when deleting machines. It can then deploy a new cluster using the same disks without lose of data, **assuming the number of workers is the same**.
 
@@ -162,7 +177,7 @@ The rest of the system resides on the **local boot disk**, unless configured oth
 
   - Note: Adding an additional slash (`gs:///`) will allow you to use the default bucket (defined at cluster build) without needing to specific it.
 
-### Use with the Google _Free Trial_
+### Can I deploy in the Google Cloud Platform _Free Trial_ ?
 
 You may use bdutil with HDP by lowering the machine type & count below the recommended specifications. To use the default configuration, upgrade the account from a free trial.
 
@@ -182,3 +197,7 @@ Feedback & Issues
  - <http://github.com/seanorama/bdutil/>
  - <http://twitter.com/seano>
 
+License
+-------
+
+[Apache License, Version 2.0](../../LICENSE)
