@@ -53,6 +53,12 @@ TOTAL_MEM=$(free -m | awk '/^Mem:/{print $2}')
 HADOOP_MR_MASTER_MEM_MB=$(python -c "print int(${TOTAL_MEM} * \
     ${HADOOP_MASTER_MAPREDUCE_MEMORY_FRACTION})")
 
+# Fix Python 2.6 on CentOS
+# TODO(user): Extract this into a helper.
+if ! python -c 'import argparse' && [[ -x $(which yum) ]]; then
+  yum install -y python-argparse
+fi
+
 # MapReduce v2 (and YARN) Configuration
 if [[ -x configure_mrv2_mem.py ]]; then
   TEMP_ENV_FILE=$(mktemp /tmp/mrv2_XXX_tmp_env.sh)

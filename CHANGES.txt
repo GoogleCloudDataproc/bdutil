@@ -1,4 +1,7 @@
-1.1.0 - 2015-xx-xx
+1.1.1 - 2015-xx-xx
+
+
+1.1.0 - 2015-01-22
 
   1. Added plugin for deploying Ambari/HDP with:
          ./bdutil -e platforms/hdp/ambari_env.sh deploy
@@ -16,6 +19,7 @@
      with compiler/tools instead of just the minimal JRE; set to 'true' in
      single_node_env.sh and ambari_env.sh.
   8. Added python script to allocate memory more intelligently in Hadoop 2.
+  9. Upgraded default Hadoop 2 version to 2.5.2.
 
 
 1.0.1 - 2014-12-16

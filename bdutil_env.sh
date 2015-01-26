@@ -167,13 +167,13 @@ CORES_PER_REDUCE_TASK=1.0
 JAVAOPTS='-Xms1024m -Xmx2048m'
 
 # Complete URL for downloading the GCS Connector JAR file.
-GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/gcs/gcs-connector-1.3.2-SNAPSHOT-hadoop1-20141222-135330.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1450821786&Signature=Y8CR1WVu2lOMdS9mgXXhIAELvhrGvmO%2BBrooLjWWRJWJCPBQ3MT%2FdVVK%2BnSqdTeMdK8jycRV6KuTPMs%2Bmr6yxHvhucKEc14mZcIdVyEo9FiS46QQeD3cn1GkKrFt90rfQ%2FJC7KaJQcqyYlZLN0lb40n8dSPPL994xbx0Lqf7lF0='
+GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-1.3.2-hadoop1.jar'
 
 # Complete URL for downloading the BigQuery Connector JAR file.
-BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/bigquery/bigquery-connector-0.5.1-SNAPSHOT-20141222-112706-hadoop1.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1450812947&Signature=O514AO229YtAaQIwLgmyV5ILuebndeT4g%2FJw2TvPWrMO7vK42XscpIllMi%2B128E5Q50jzGHlUxZaRNc37yRXLylekSo88WOTg9YUxN%2FjLzYmIkOlFPUfWLogjUVvlh4zvGYqaZ%2FpbNW2DWtQM7Yhy1khFgD0%2B51ruCgjfMHzVz0='
+BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/bigquery/bigquery-connector-0.5.1-hadoop1.jar'
 
 # Complete URL for downloading the Cloud Datastore Connector JAR file.
-DATASTORE_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/datastore/datastore-connector-0.14.10-SNAPSHOT-20141222-133725-hadoop1.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1450820611&Signature=mPGE%2Fv%2FMfV5c1AY%2BjDiJ9troPcZMUzSaw82RdDXRj8Tzxh5JuGwDixGziaAXM0aW9pRb%2B8X97hAICM2vo%2B4lVHg6JJtyXhhGYJfn8o9KFp8x%2FoMp7AiGWlqIFvM27M%2FM4TZTpu%2BzWDtm9WTXWi4SEpOuCbZoqTu2fRjFuNTOpfk='
+DATASTORE_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/datastore/datastore-connector-0.14.9-hadoop1.jar'
 
 # Complete URL for downloading the configuration script.
 BDCONFIG='https://storage.googleapis.com/hadoop-tools/bdconfig/bdconfig-0.28.1.tar.gz'
