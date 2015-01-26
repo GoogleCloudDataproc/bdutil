@@ -12,8 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Makes post-cluster build configuration changes
+# finalize the cluster configuration
 
+source hadoop_helpers.sh
+
+# initialize hdfs dirs
+if [ "${DEFAULT_FS}" = 'hdfs' ]; then
+    loginfo "Set up HDFS /tmp and /user dirs"
+    initialize_hdfs_dirs
+fi
+
+# update hadoop configuration to include the gcs connector
 if (( ${INSTALL_GCS_CONNECTOR} )) ; then
     loginfo "adding /usr/local/lib/hadoop/lib to mapreduce.application.classpath."
     NEW_CLASSPATH=$(/var/lib/ambari-server/resources/scripts/configs.sh get localhost ${PREFIX} mapred-site | grep -E '^"mapreduce.application.classpath"' | tr -d \" | awk '{print "/usr/local/lib/hadoop/lib/*,"$3}' | sed 's/,$//')
@@ -27,4 +36,7 @@ if (( ${INSTALL_GCS_CONNECTOR} )) ; then
         ambari_service_start
         ambari_wait_requests_completed
     done
+
+    # check if GCS is accessible
+    check_filesystem_accessibility
 fi

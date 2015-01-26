@@ -31,7 +31,7 @@
 #
 
 # Default to 10MB (100k records).
-TERA_GEN_NUM_RECORDS=100000
+TERA_GEN_NUM_RECORDS=${TERA_GEN_NUM_RECORDS:-100000}
 
 # File hadoop-confg.sh
 HADOOP_CONFIGURE_CMD=''
@@ -129,8 +129,10 @@ if [[ ${EXIT_CODE} -ne 0 ]]; then
 fi
 echo 'teragen, terasort, teravalidate passed.'
 
-echo "Cleaning the data created by tests: ${PARENT_DIR}"
+if [ ! "${TERA_CLEANUP_SKIP}" ]; then
+    echo "Cleaning the data created by tests: ${PARENT_DIR}"
 
-CLEANUP_CMD="${HADOOP_CMD} dfs -rmr -skipTrash ${PARENT_DIR}"
-echo ${CLEANUP_CMD}
-eval ${CLEANUP_CMD}
+    CLEANUP_CMD="${HADOOP_CMD} dfs -rmr -skipTrash ${PARENT_DIR}"
+    echo ${CLEANUP_CMD}
+    eval ${CLEANUP_CMD}
+fi

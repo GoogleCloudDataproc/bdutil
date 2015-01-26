@@ -50,6 +50,7 @@ COMMAND_GROUPS+=(
   "install-gcs-connector-on-ambari:
      platforms/hdp/install_gcs_connector_on_ambari.sh
   "
+
   "update-ambari-config:
      platforms/hdp/update_ambari_config.sh
   "

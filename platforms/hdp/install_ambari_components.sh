@@ -100,10 +100,4 @@ ${AMBARI_CURL} -X POST -d @${CLUSTER_TEMPLATE_FILE} \
 loginfo "Waiting for ambari cluster creation to complete (may take awhile)."
 ambari_wait_requests_completed
 
-# Set up HDFS /user directories.
-loginfo "Setting up HDFS /user directories."
-for USER in $(getent passwd | grep '/home' | cut -d ':' -f 1); do
-  echo "Creating HDFS directory for user '${USER}'"
-  sudo -u hdfs hdfs dfs -mkdir -p "/user/${USER}"
-  sudo -u hdfs hdfs dfs -chown "${USER}" "/user/${USER}"
-done
+loginfo "Ambari is now available at http://${PREFIX}-m:8080/"

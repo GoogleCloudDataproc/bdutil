@@ -3,14 +3,20 @@
 Hortonworks Data Platform (HDP) on Google Cloud Platform
 ========================================================
 
-Deploying Hadoop clusters with **Google's bdutil & Apache Ambari**.
+This extension, to Google's [bdutil](https://github.com/GoogleCloudPlatform/bdutil), provides support for deploying the [Hortonworks Data Platform](http://hortonworks.com/) with a single command. 
+
+The extension utilizes Apache Ambari's Blueprint Recommendations to fully configure the cluster without the need for manual configuration.
 
 Resources
 ---------
 
 * [Google documentation](https://cloud.google.com/hadoop/) for bdutil & Hadoop on Google Cloud Platform.
-* [Latest source on Github](https://github.com/GoogleCloudPlatform/bdutil). Use & improve.
-* [Video Tutorial](http://youtu.be/raCtS84Vb6w)
+* [Source on Github](https://github.com/GoogleCloudPlatform/bdutil). Open to the community and welcoming your collaboration.
+
+Video Tutorial
+--------------
+
+[<img src="http://img.youtube.com/vi/raCtS84Vb6w/0.jpg" width="320px" />](http://www.youtube.com/watch?v=raCtS84Vb6w)
 
 Before you start
 ----------------
@@ -19,7 +25,7 @@ Before you start
 
   - open https://console.developers.google.com/
   - sign-in or create an account
-  - The "free trial" [may be used](#common-issues)
+  - The "free trial" [may be used](#questions)
   
 
 #### Create a Google Cloud Project
@@ -121,17 +127,77 @@ For command-line based jobs, 'bdutil' gives methods for passing through commands
 
 For example: `./bdutil shell < ./extensions/google/gcs-validate-setup.sh`
 
-Common issues
--------------
+Questions
+---------
 
+### Can I set/override Hadoop configurations during deployment?
 
-### 'Free Trial' users or those with limited quota
+For adding/overriding Hadoop configurations, update `configuration.json` and then  use the extension as documented. And contribute back if you think the defaults should be changed.
+
+### Can I deploy HDP manually using Ambari and/or use my own Ambari Blueprints?
+
+Yes. Set `ambari_manual_env.sh` as your environment _(with the -e switch)_ instead of `ambari_env.sh`. That will configure Ambari across the cluster & handle all HDP prerequisites, but not trigger the Ambari Blueprints which install HDP.
+
+Note that these steps will not be taken for you:
+
+  - initialization of HDFS /user directories _(Check the function `initialize_hdfs_dirs` in `../../libexec/hadoop_helpers.sh`)_
+  - installation of the GCS connector. _(Check `./install_gcs_connector_on_ambari.sh` & `./update_ambari_config.sh`)_
+
+### Can I re-use the attached persistent disk(s) across deployments?
+
+`bdutil` supports keeping persistent disks _(aka `ATTACHED_PDS`)_ online when deleting machines. It can then deploy a new cluster using the same disks without lose of data, **assuming the number of workers is the same**.
+
+The basic commands are below. Find more detail in [TEST.md](./TEST.md).
+
+```
+## deploy the cluster & create disks
+./bdutil -e platforms/hdp/ambari_env.sh deploy
+
+## delete the cluster but don't delete the disks
+export DELETE_ATTACHED_PDS_ON_DELETE=false
+./bdutil -e platforms/hdp/ambari_env.sh delete
+
+## create with existing disks
+export CREATE_ATTACHED_PDS_ON_DEPLOY=false
+./bdutil -e platforms/hdp/ambari_env.sh deploy
+```
+
+Another would be to use `gs://` _(Google Cloud Storage)_ instead of `hdfs://` in your Hadoop jobs, even setting it as the default. Or backup HDFS to Google Cloud Storage before cluster deletion.
+
+**Note**: Hortonworks can't guarantee the safety of data throughout this process. You should always take care when manipulating disks and have backups where necessary.
+
+### What are the built-in storage options?
+
+By default, HDFS is on **attached disks** _('pd-standard' or 'pd-ssd')_.
+- the size and type can be set in `ambari.conf`
+ 
+The rest of the system resides on the **local boot disk**, unless configured otherwise.
+ 
+**Google Cloud Storage** is also available with **`gs://`**. It can be used anywhere that `hdfs://` is available, such as but not limited to mapreduce & `hadoop fs` operations.
+
+  - Note: Adding an additional slash (`gs:///`) will allow you to use the default bucket (defined at cluster build) without needing to specific it.
+
+### Can I deploy in the Google Cloud Platform _Free Trial_ ?
 
 You may use bdutil with HDP by lowering the machine type & count below the recommended specifications. To use the default configuration, upgrade the account from a free trial.
 
   * In 'platforms/hdp/ambari.conf':
-    * GCE_MACHINE_TYPE='n1-standard-2'
-    * WORKERS=3 # or less
+    * `GCE_MACHINE_TYPE='n1-standard-2'`
+    * `WORKERS=3 # or less`
   * Or at the command-line provide these switches to the 'deploy' & 'delete':
     * Deploy cluster: `-n 3 -m n1-standard-2`
 
+Known Issues
+------------
+
+
+Feedback & Issues
+-----------------
+
+ - <http://github.com/seanorama/bdutil/>
+ - <http://twitter.com/seano>
+
+License
+-------
+
+[Apache License, Version 2.0](../../LICENSE)
