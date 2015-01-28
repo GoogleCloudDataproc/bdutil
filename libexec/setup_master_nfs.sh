@@ -28,8 +28,13 @@ if (( ${INSTALL_GCS_CONNECTOR} )) && \
       "${NFS_EXPORT_POINT}" "${META_CACHE_DIRECTORY}"
 
   if ! grep -e "BDUTIL_FILE_CACHE_BINDING" /etc/fstab ; then
-    MOUNT_STRING="${META_CACHE_DIRECTORY} ${NFS_EXPORT_POINT} none bind 0 0"
-    MOUNT_STRING="${MOUNT_STRING} #BDUTIL_FILE_CACHE_BINDING"
+    MOUNT_OPTIONS='bind'
+    if which systemctl; then
+      # Use x-systemd.automount to mount after PDs on systemd based systems.
+      MOUNT_OPTIONS+=",x-systemd.automount"
+    fi
+    MOUNT_STRING="${META_CACHE_DIRECTORY} ${NFS_EXPORT_POINT}"
+    MOUNT_STRING+=" none ${MOUNT_OPTIONS} 0 0 #BDUTIL_FILE_CACHE_BINDING"
     echo "${MOUNT_STRING}" >> /etc/fstab
     mount "${NFS_EXPORT_POINT}"
   fi
