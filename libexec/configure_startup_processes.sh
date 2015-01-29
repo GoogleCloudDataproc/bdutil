@@ -64,7 +64,7 @@ for DAEMON in "${HADOOP_DAEMONS[@]}"; do
 
   # If the service relies on the existence of the GCS file cache wait for autofs
   if (( ${INSTALL_GCS_CONNECTOR} && ${ENABLE_NFS_GCS_FILE_CACHE} )) &&
-      [[ "${DEFAULT_FS}" == 'gs' ]] && [[ "${SERVICE}" != 'hdfs' ]]; then
+      [[ "${SERVICE}" != 'hdfs' ]]; then
     DEPENDENCIES+=' autofs'
   fi
 
