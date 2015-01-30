@@ -71,14 +71,16 @@ MASTER_UI_PORTS=('8080')
 
 import_env platforms/hdp/ambari_functions.sh
 
-UPLOAD_FILES=(
-  'hadoop2_env.sh'
-  'libexec/hadoop_helpers.sh'
-  'platforms/hdp/ambari_functions.sh'
-  'platforms/hdp/ambari.conf'
-  'platforms/hdp/resources/public-hostname-gcloud.sh'
-  'platforms/hdp/resources/thp-disable.sh'
-)
+if [[ -n "${BDUTIL_DIR}" ]]; then
+  UPLOAD_FILES=(
+    "${BDUTIL_DIR}/hadoop2_env.sh"
+    "${BDUTIL_DIR}/libexec/hadoop_helpers.sh"
+    "${BDUTIL_DIR}/platforms/hdp/ambari_functions.sh"
+    "${BDUTIL_DIR}/platforms/hdp/ambari.conf"
+    "${BDUTIL_DIR}/platforms/hdp/resources/public-hostname-gcloud.sh"
+    "${BDUTIL_DIR}/platforms/hdp/resources/thp-disable.sh"
+  )
+fi
 
 COMMAND_GROUPS+=(
   "ambari-setup:

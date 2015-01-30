@@ -59,9 +59,9 @@ MASTER_UI_PORTS=('8088' '50070')
 # Use Hadoop 2 specific configuration templates.
 if [[ -n "${BDUTIL_DIR}" ]]; then
   UPLOAD_FILES=($(find ${BDUTIL_DIR}/conf/hadoop2 -name '*template.xml'))
-  UPLOAD_FILES+=(${BDUTIL_DIR}/libexec/hadoop_helpers.sh)
+  UPLOAD_FILES+=("${BDUTIL_DIR}/libexec/hadoop_helpers.sh")
+  UPLOAD_FILES+=("${BDUTIL_DIR}/libexec/configure_mrv2_mem.py")
 fi
-UPLOAD_FILES+=("libexec/configure_mrv2_mem.py")
 
 # Use Hadoop 2 specific start scripts
 COMMAND_GROUPS+=(
