@@ -18,7 +18,6 @@ if (( ${INSTALL_GCS_CONNECTOR} )) && \
   setup_gcs_admin
 
   install_application "nfs-common" "nfs-utils"
-  install_application "autofs"
 
   NFS_MOUNT_POINT="$(get_nfs_mount_point)"
   NFS_EXPORT_POINT="$(get_nfs_export_point)"
@@ -32,11 +31,5 @@ if (( ${INSTALL_GCS_CONNECTOR} )) && \
   MOUNT_STRING="/${NFS_MOUNT_POINT} -fstype=nfs,defaults,rw,hard,intr"
   MOUNT_STRING="${MOUNT_STRING} ${MASTER_HOSTNAME}:${NFS_EXPORT_POINT}"
   echo "${MOUNT_STRING}" > /etc/auto.hadoop_gcs_metadata_cache
-
-  if [[ -f /usr/lib/systemd/system/autofs.service ]] \
-      && which systemctl ; then
-    systemctl enable autofs
-  fi
-
   service autofs restart
 fi

@@ -366,6 +366,7 @@ COMMAND_GROUPS=(
      libexec/install_java.sh
      libexec/mount_disks.sh
      libexec/setup_hadoop_user.sh
+     libexec/install_autofs.sh
      libexec/install_hadoop.sh
      libexec/install_bdconfig.sh
      libexec/configure_hadoop.sh
