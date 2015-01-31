@@ -43,12 +43,14 @@ HDFS_TMP_DIR='/tmp'
 HADOOP_TMP_DIR='/hadoop/tmp'
 
 # File dependencies to be used by the scripts.
-UPLOAD_FILES+=(
-  'extensions/querytools/pig-mapred-template.xml'
-  'sampleapps/querytools/conf/hive/hive-site.xml'
-  'sampleapps/querytools/scripts/common_utils.sh'
-  'sampleapps/querytools/scripts/package_utils.sh'
-)
+if [[ -n "${BDUTIL_DIR}" ]]; then
+  UPLOAD_FILES+=(
+    "${BDUTIL_DIR}/extensions/querytools/pig-mapred-template.xml"
+    "${BDUTIL_DIR}/sampleapps/querytools/conf/hive/hive-site.xml"
+    "${BDUTIL_DIR}/sampleapps/querytools/scripts/common_utils.sh"
+    "${BDUTIL_DIR}/sampleapps/querytools/scripts/package_utils.sh"
+  )
+fi
 COMMAND_GROUPS+=(
   "install_querytools:
      extensions/querytools/prepare_files.sh

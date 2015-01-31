@@ -36,11 +36,13 @@ AMBARI_SERVICES="${AMBARI_SERVICES:-FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA K
     NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER}"
 
 
-UPLOAD_FILES+=(
-  'platforms/hdp/ambari_manual_env.sh'
-  'platforms/hdp/configuration.json'
-  'platforms/hdp/create_blueprint.py'
-)
+if [[ -n "${BDUTIL_DIR}" ]]; then
+  UPLOAD_FILES+=(
+    "${BDUTIL_DIR}/platforms/hdp/ambari_manual_env.sh"
+    "${BDUTIL_DIR}/platforms/hdp/configuration.json"
+    "${BDUTIL_DIR}/platforms/hdp/create_blueprint.py"
+  )
+fi
 
 COMMAND_GROUPS+=(
   "install-ambari-components:
