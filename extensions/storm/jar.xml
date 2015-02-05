@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!--
+
+  This is a sample configuration file for setting up logging for the
+  "storm jar" command. In particular, it demonstrates how you can
+  enable debug logging in Storm for a package.
+
+  Starting with v0.9.0 Storm uses log4j-over-slf4j and logback,
+  so it uses a logback config file rather than a log4j config file
+  as it did previous to v0.9.
+
+  In order to use this file, copy it into "/home/hadoop/storm-install/logback"
+  on the master of your cluster (where you run the "storm jar" command).
+  Then edit /home/hadoop/storm-install/bin/storm to make it use this file;
+  look for the "jar" function, and direct Storm as to where it should find
+  its logging config file by adding the "logopts=" line and the ", logopts"
+  in the "jvmopts=" line as shown here:
+
+    def jar(jarfile, klass, *args):
+        logopts="-Dlogback.configurationFile=" + STORM_DIR + "/logback/jar.xml"
+        exec_storm_class(
+            klass,
+            jvmtype="-client",
+            extrajars=[jarfile, USER_CONF_DIR, STORM_DIR + "/bin"],
+            args=args,
+            jvmopts=JAR_JVM_OPTS + ["-Dstorm.jar=" + jarfile, logopts])
+
+  Now when you run "storm jar" it will load this config file.
+
+  To enable debugging for a particular package, edit or copy the
+  "logger" element, change the "name" attribute to match your package,
+  and set the "value" attribute on the "level" element to DEBUG.
+  You can also quiet down the logging by changing the root level from
+  INFO to WARN or ERROR (or even OFF).
+
+-->
+
+<configuration scan="true" scanPeriod="60 seconds">
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} %c{1} [%p] %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+
+  <logger name="com.google" additivity="false">
+    <level value="DEBUG" />
+    <appender-ref ref="CONSOLE" />
+  </logger>
+
+</configuration>
