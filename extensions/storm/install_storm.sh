@@ -51,7 +51,7 @@ EOF
 # during interactive ssh session.
 add_to_path_at_login "${STORM_INSTALL_DIR}/bin"
 
-# TODO(dhuo): Fix this a better way.
+# TODO(user): Fix this a better way.
 cp /home/hadoop/hadoop-install/lib/gcs-connector*.jar /home/hadoop/storm-install/lib/
 cp /home/hadoop/hadoop-install/hadoop-core*.jar /home/hadoop/storm-install/lib/
 cp /home/hadoop/hadoop-install/lib/commons-configuration*.jar /home/hadoop/storm-install/lib/

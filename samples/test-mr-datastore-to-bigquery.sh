@@ -17,7 +17,13 @@
 # Runs WordCount job that reads from Datastore and writes to BigQuery.
 ################################################################################
 
-# Usage: ./bdutil -v -u "samples/*" run_command ./test-mr-datastore-to-bigquery.sh [outputDatasetId] [outputTableId]
+# Usage:
+#   Specify outputDatasetId and outputTableId explicitly:
+#       ./bdutil -v -u "samples/*" run_command ./test-mr-datastore-to-bigquery.sh [outputDatasetId] [outputTableId]
+#   Auto-generate tableId inside existing dataset:
+#       ./bdutil -v -u "samples/*" run_command ./test-mr-datastore-to-bigquery.sh [outputDatasetId]
+#   Auto-generate tableId and datasetId, auto-create the dataset:
+#       ./bdutil -v -u "samples/*" run_command ./test-mr-datastore-to-bigquery.sh
 
 set -e
 
@@ -27,10 +33,17 @@ DATASET_ID=${PROJECT}
 OUTPUT_DATASET_ID=$1
 OUTPUT_TABLE_ID=$2
 
-if [[ -z "${OUTPUT_DATASET_ID}" ]] || [[ -z "${OUTPUT_TABLE_ID}" ]]; then
-  echo "Error. test-mr-datastore-to-biquery.sh requires two arguments." \
-    "The BigQuery dataset and table ID to output to." >&2
-  exit 1
+CREATED_DATASET=0
+if [[ -z "${OUTPUT_DATASET_ID}" ]]; then
+  OUTPUT_DATASET_ID="validate_datastoretobigquery_dataset_$(date +%s)"
+  echo "No OUTPUT_DATASET_ID provided; using ${OUTPUT_DATASET_ID}"
+  bq mk "${PROJECT}:${OUTPUT_DATASET_ID}"
+  CREATED_DATASET=1
+fi
+
+if [[ -z "${OUTPUT_TABLE_ID}" ]]; then
+  OUTPUT_TABLE_ID="validate_datastoretobigquery_table_$(date +%s)"
+  echo "No OUTPUT_TABLE_ID provided; using ${OUTPUT_TABLE_ID}"
 fi
 
 # Check for existence of jars
@@ -48,4 +61,8 @@ hadoop jar datastore_wordcountsetup.jar ${PROJECT} hadoopSampleWordCountLine \
 #  Perform word count MapReduce on README.txt
 hadoop jar datastoretobigquery_wordcount.jar ${DATASET_ID} ${PROJECT} \
   ${OUTPUT_DATASET_ID} ${OUTPUT_TABLE_ID} hadoopSampleWordCountLine wordcount
-echo 'Word count job finished successfully.'
+echo 'Word count job finished successfully.' \
+     "Manually clean up with 'bq rm ${OUTPUT_DATASET_ID}.${OUTPUT_TABLE_ID}'"
+if (( ${CREATED_DATASET} )); then
+  echo "To delete entire dataset: 'bq rm -r ${OUTPUT_DATASET_ID}'"
+fi

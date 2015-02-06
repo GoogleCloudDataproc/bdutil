@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#TODO(pclay) support other Linux distributions.
+#TODO(user) support other Linux distributions.
 download_bd_resource \
     http://archive.cloudera.com/cdh${CDH_VERSION}/debian/wheezy/amd64/cdh/cloudera.list \
     /etc/apt/sources.list.d/cloudera.list
-# TODO(pclay): fix insecure download of apt-key.
+# TODO(user): fix insecure download of apt-key.
 download_bd_resource \
     http://archive.cloudera.com/cdh${CDH_VERSION}/debian/wheezy/amd64/cdh/archive.key \
     /tmp/cloudera.key
