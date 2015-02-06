@@ -1,23 +1,14 @@
 #!/usr/bin/env bash
-#
-# disable transparent huge pages for Hadoop
-#
-
-thp_disable=true # disable transparent huge pages
-
+# disable transparent huge pages: for Hadoop
+thp_disable=true
 if [ "${thp_disable}" = true ]; then
-    if test -f /sys/kernel/mm/redhat_transparent_hugepage/enabled; then
-        echo never > /sys/kernel/mm/redhat_transparent_hugepage/enabled
-    fi
-    if test -f /sys/kernel/mm/redhat_transparent_hugepage/defrag; then
-        echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag
-    fi
-    if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
-        echo never > /sys/kernel/mm/transparent_hugepage/enabled
-    fi
-    if test -f /sys/kernel/mm/transparent_hugepage/defrag; then
-        echo never > /sys/kernel/mm/transparent_hugepage/defrag
-    fi
+    for path in redhat_transparent_hugepage transparent_hugepage; do
+        if test -f /sys/kernel/mm/${path}/enabled; then
+            echo never > /sys/kernel/mm/${path}/enabled
+        fi
+        if test -f /sys/kernel/mm/${path}/defrag; then
+            echo never > /sys/kernel/mm/${path}/defrag
+        fi
+    done
 fi
-
 exit 0
