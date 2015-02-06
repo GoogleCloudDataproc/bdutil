@@ -46,6 +46,7 @@ COMMAND_GROUPS+=(
   "deploy-cdh:
      libexec/mount_disks.sh
      libexec/install_java.sh
+     libexec/install_autofs.sh
      platforms/cdh/install_cdh.sh
      libexec/install_bdconfig.sh
      libexec/configure_hadoop.sh
