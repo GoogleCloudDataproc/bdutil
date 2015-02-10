@@ -57,6 +57,9 @@ COMMAND_GROUPS+=(
   "install_spark:
      extensions/spark/install_spark.sh
   "
+  "spark_configure_startup:
+     extensions/spark/spark_configure_startup_processes.sh
+  "
   "start_spark:
      extensions/spark/start_spark.sh
   "
@@ -65,5 +68,6 @@ COMMAND_GROUPS+=(
 # Installation of spark on master and workers; then start_spark only on master.
 COMMAND_STEPS+=(
   'install_spark,install_spark'
+  'spark_configure_startup,spark_configure_startup'
   'start_spark,*'
 )
