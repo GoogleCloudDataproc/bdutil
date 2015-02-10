@@ -36,8 +36,12 @@ PROJECT=""
 
 # GCE settings.
 GCE_IMAGE='debian-7-backports'
-GCE_MACHINE_TYPE='n1-standard-4'
-GCE_ZONE='us-central1-a'
+# MOE:begin_strip
+GCE_MACHINE_TYPE='n1-standard-2'
+GCE_ZONE='us-east1-a'
+# MOE:end_strip
+# MOE:insert GCE_MACHINE_TYPE='n1-standard-4'
+# MOE:insert GCE_ZONE='us-central1-a'
 # When setting a network it's important for all nodes be able to communicate
 # with eachother and for SSH connections to be allowed inbound to complete
 # cluster setup and configuration.
