@@ -23,6 +23,8 @@
 ## There should be nothing to edit here, use ambari.conf              ##
 ########################################################################
 
+# Remove core bdutil upload files.
+UPLOAD_FILES=()
 
 # Import hadoop2_env.sh just for the GCS_CONNECTOR_JAR.
 import_env hadoop2_env.sh
@@ -72,11 +74,8 @@ MASTER_UI_PORTS=('8080')
 import_env platforms/hdp/ambari_functions.sh
 
 if [[ -n "${BDUTIL_DIR}" ]]; then
-  UPLOAD_FILES=(
-    "${BDUTIL_DIR}/hadoop2_env.sh"
+  UPLOAD_FILES+=(
     "${BDUTIL_DIR}/libexec/hadoop_helpers.sh"
-    "${BDUTIL_DIR}/platforms/hdp/ambari_functions.sh"
-    "${BDUTIL_DIR}/platforms/hdp/ambari.conf"
     "${BDUTIL_DIR}/platforms/hdp/resources/public-hostname-gcloud.sh"
     "${BDUTIL_DIR}/platforms/hdp/resources/thp-disable.sh"
   )

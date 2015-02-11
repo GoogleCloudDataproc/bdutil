@@ -38,7 +38,6 @@ AMBARI_SERVICES="${AMBARI_SERVICES:-FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA K
 
 if [[ -n "${BDUTIL_DIR}" ]]; then
   UPLOAD_FILES+=(
-    "${BDUTIL_DIR}/platforms/hdp/ambari_manual_env.sh"
     "${BDUTIL_DIR}/platforms/hdp/configuration.json"
     "${BDUTIL_DIR}/platforms/hdp/create_blueprint.py"
   )
