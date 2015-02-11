@@ -89,7 +89,6 @@ COMMAND_GROUPS+=(
      libexec/mount_disks.sh
      libexec/install_java.sh
      libexec/setup_hadoop_user.sh
-     libexec/install_autofs.sh
      platforms/hdp/install_ambari.sh
   "
 
