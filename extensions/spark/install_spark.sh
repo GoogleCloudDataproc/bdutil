@@ -79,14 +79,29 @@ SPARK_DAEMON_MEMORY=$(python -c \
     "print int(${TOTAL_MEM} * ${SPARK_DAEMON_MEMORY_FRACTION})")
 SPARK_EXECUTOR_MEMORY=$(python -c \
     "print int(${TOTAL_MEM} * ${SPARK_EXECUTOR_MEMORY_FRACTION})")
-set +o nounset
-if [[ -n "${NODEMANAGER_MEMORY_FRACTION}" ]]; then
-  SPARK_YARN_EXECUTOR_MEMORY=$(python -c "print int(${TOTAL_MEM} * \
-      min(${SPARK_EXECUTOR_MEMORY_FRACTION}, ${NODEMANAGER_MEMORY_FRACTION}))")
+
+# If YARN is setup. Shrink memory to fit on NodeManagers.
+if (( ${HADOOP_VERSION} > 1 )); then
+  set +o nounset
+  YARN_MEMORY_ENV=$(find /tmp/mrv2_*_env.sh | head -1)
+  if [[ -r "${YARN_MEMORY_ENV}" ]]; then
+    source "${YARN_MEMORY_ENV}"
+  fi
+  if [[ -n "${NODEMANAGER_MEM_MB}" ]]; then
+    SPARK_EXECUTOR_MEMORY=$(python -c "print int(min( \
+        ${SPARK_EXECUTOR_MEMORY}, ${NODEMANAGER_MEM_MB}))")
+  fi
+  set -o nounset
+  # Make room for spark.yarn.executor.memoryOverhead roughly according to
+  # http://spark.apache.org/docs/1.2.0/configuration.html.
+  SPARK_YARN_EXECUTOR_MEMORY_OVERHEAD=$(python -c "print int(max( \
+      ${SPARK_EXECUTOR_MEMORY} * 0.07 / 1.07, 384))")
+  SPARK_EXECUTOR_MEMORY=$(( ${SPARK_EXECUTOR_MEMORY} - \
+      ${SPARK_YARN_EXECUTOR_MEMORY_OVERHEAD} ))
 else
-  SPARK_YARN_EXECUTOR_MEMORY=${SPARK_EXECUTOR_MEMORY}
+  # Use simple default. It won't be used.
+  SPARK_YARN_EXECUTOR_MEMORY_OVERHEAD=384
 fi
-set -o nounset
 
 # Determine Spark master using appropriate mode
 if [[ ${SPARK_MODE} == 'standalone' ]]; then
@@ -116,11 +131,13 @@ EOF
 if [[ "${SPARK_MAJOR_VERSION}" == '0' ]]; then
 cat << EOF >> ${SPARK_INSTALL_DIR}/conf/spark-env.sh
 # Append to front so that user-specified SPARK_JAVA_OPTS at runtime will win.
-export SPARK_JAVA_OPTS="-Dspark.executor.memory=${SPARK_EXECUTOR_MEMORY}m \${SPARK_JAVA_OPTS}"
+export SPARK_JAVA_OPTS="-Dspark.executor.memory=\
+${SPARK_EXECUTOR_MEMORY}m \${SPARK_JAVA_OPTS}"
 export SPARK_JAVA_OPTS="-Dspark.local.dir=${SPARK_TMPDIR} \${SPARK_JAVA_OPTS}"
 
 # Will be ingored if not running on YARN
-export SPARK_JAVA_OPTS="-Dspark.yarn.executor.memoryOverhead=${SPARK_YARN_EXECUTOR_MEMORY}m \${SPARK_JAVA_OPTS}"
+export SPARK_JAVA_OPTS="-Dspark.yarn.executor.memoryOverhead=\
+${SPARK_YARN_EXECUTOR_MEMORY_OVERHEAD} \${SPARK_JAVA_OPTS}"
 EOF
 fi
 
@@ -135,7 +152,7 @@ cat << EOF >> ${SPARK_INSTALL_DIR}/conf/spark-defaults.conf
 spark.eventLog.enabled true
 spark.eventLog.dir gs://${CONFIGBUCKET}/spark-eventlog-base/${MASTER_HOSTNAME}
 spark.executor.memory ${SPARK_EXECUTOR_MEMORY}m
-spark.yarn.executor.memoryOverhead ${SPARK_YARN_EXECUTOR_MEMORY}m
+spark.yarn.executor.memoryOverhead ${SPARK_YARN_EXECUTOR_MEMORY_OVERHEAD}
 EOF
 
 # Add the spark 'bin' path to the .bashrc so that it's easy to call 'spark'

@@ -46,12 +46,29 @@ SPARK_SHELL=$(find /home/hadoop -name spark-shell | head -n 1)
 # Create a unique directory for testing RDD persistence.
 PARENT_DIR="/validate_spark_$(date +%s)"
 
+set -x
 # Get info about the cluster.
-NUM_WORKERS=$(wc -l $(dirname ${SPARK_SHELL})/../conf/slaves \
-    | cut -d ' ' -f 1)
+SPARK_CONF_DIR="$(dirname ${SPARK_SHELL})/../conf"
+NUM_EXECUTORS=$(wc -l < ${SPARK_CONF_DIR}/slaves)
+
+# Test if we are submitting on YARN
+if grep -q '^spark.master\s*yarn' ${SPARK_CONF_DIR}/spark-defaults.conf \
+    || grep -q '^[^#]*MASTER=yarn' ${SPARK_CONF_DIR}/spark-env.sh; then
+  if (( ${NUM_EXECUTORS} < 3 )); then
+    echo 'Spark requires 3 executors to run this script on YARN' >&2
+    exit 1
+  fi
+  # Subtract one node for the AppMaster.
+  SPARK_SHELL+=" --num-executors $(( --NUM_EXECUTORS )) "
+
+  # Subract one more for an unknown reason.
+  (( NUM_EXECUTORS-- ))
+fi
+
 NUM_CPUS=$(grep -c ^processor /proc/cpuinfo)
-NUM_SHARDS=$((${NUM_WORKERS} * ${NUM_CPUS}))
-echo "NUM_WORKERS: ${NUM_WORKERS}"
+# Double the cores to have a better chance of using them all.
+NUM_SHARDS=$((${NUM_EXECUTORS} * ${NUM_CPUS} * 2))
+echo "NUM_EXECUTORS: ${NUM_EXECUTORS}"
 echo "NUM_CPUS: ${NUM_CPUS}"
 echo "NUM_SHARDS: ${NUM_SHARDS}"
 
@@ -75,8 +92,8 @@ for (greeting <- uniqueGreetings.collect()) {
 }
 
 val numHostnames = uniqueHostnames.count()
-if (numHostnames != ${NUM_WORKERS}) {
-  println("Expected ${NUM_WORKERS} hosts, got " + numHostnames)
+if (numHostnames != ${NUM_EXECUTORS}) {
+  println("Expected ${NUM_EXECUTORS} hosts, got " + numHostnames)
   exit(1)
 }
 
@@ -112,8 +129,8 @@ for (greeting <- uniqueGreetings.collect()) {
 }
 
 val numHostnames = uniqueHostnames.count()
-if (numHostnames != ${NUM_WORKERS}) {
-  println("Expected ${NUM_WORKERS} hosts, got " + numHostnames)
+if (numHostnames != ${NUM_EXECUTORS}) {
+  println("Expected ${NUM_EXECUTORS} hosts, got " + numHostnames)
   exit(1)
 }
 
