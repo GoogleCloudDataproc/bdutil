@@ -78,6 +78,7 @@ import_env platforms/hdp/ambari_functions.sh
 if [[ -n "${BDUTIL_DIR}" ]]; then
   UPLOAD_FILES+=(
     "${BDUTIL_DIR}/libexec/hadoop_helpers.sh"
+    "${BDUTIL_DIR}/platforms/hdp/configuration.json"
     "${BDUTIL_DIR}/platforms/hdp/resources/public-hostname-gcloud.sh"
     "${BDUTIL_DIR}/platforms/hdp/resources/thp-disable.sh"
   )
@@ -90,6 +91,14 @@ COMMAND_GROUPS+=(
      libexec/setup_hadoop_user.sh
      libexec/install_autofs.sh
      platforms/hdp/install_ambari.sh
+  "
+
+  "install-gcs-connector-on-ambari:
+     platforms/hdp/install_gcs_connector_on_ambari.sh
+  "
+
+  "update-ambari-config:
+     platforms/hdp/update_ambari_config.sh
   "
 )
 

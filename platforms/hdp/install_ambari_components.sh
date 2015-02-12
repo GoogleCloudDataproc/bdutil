@@ -15,13 +15,11 @@
 # Creates Ambari cluster based on Ambari's recommendations. Waits for the
 # operations to finish.
 
-loginfo "Setting up GCS connector cache cleaner and configuration."
+# Get config for GCS connector cache.
 if (( ${INSTALL_GCS_CONNECTOR} )) ; then
   if (( ${ENABLE_NFS_GCS_FILE_CACHE} )); then
     export GCS_METADATA_CACHE_TYPE='FILESYSTEM_BACKED'
     export GCS_FILE_CACHE_DIRECTORY="$(get_nfs_mount_point)"
-
-    setup_cache_cleaner
   else
     export GCS_METADATA_CACHE_TYPE='IN_MEMORY'
     # For IN_MEMORY cache, this directory won't actually be used, but we set
@@ -45,8 +43,7 @@ JSON_HOST_ARRAY="[ \"$(hostname --fqdn)\",
         | paste -sd,)]"
 
 # Make variable substitutions in configurations blueprint.
-loginfo "Replacing variables in ${CUSTOM_CONFIGURAITION_FILE}."
-perl -pi -e 's/\$\{([^\}]*)\}/$ENV{$1}/e' ${CUSTOM_CONFIGURAITION_FILE}
+subsitute_bash_in_json ${CUSTOM_CONFIGURAITION_FILE}
 
 # Wait for all hosts to register:
 loginfo "Waiting for all hosts to register."

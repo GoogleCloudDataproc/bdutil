@@ -3,7 +3,7 @@
 Hortonworks Data Platform (HDP) on Google Cloud Platform
 ========================================================
 
-This extension, to Google's [bdutil](https://github.com/GoogleCloudPlatform/bdutil), provides support for deploying the [Hortonworks Data Platform](http://hortonworks.com/) with a single command. 
+This extension, to Google's [bdutil](https://github.com/GoogleCloudPlatform/bdutil), provides support for deploying the [Hortonworks Data Platform](http://hortonworks.com/) with a single command.
 
 The extension utilizes Apache Ambari's Blueprint Recommendations to fully configure the cluster without the need for manual configuration.
 
@@ -26,7 +26,7 @@ Before you start
   - open https://console.developers.google.com/
   - sign-in or create an account
   - The "free trial" [may be used](#questions)
-  
+
 
 #### Create a Google Cloud Project
 
@@ -138,10 +138,7 @@ For adding/overriding Hadoop configurations, update `configuration.json` and the
 
 Yes. Set `ambari_manual_env.sh` as your environment _(with the -e switch)_ instead of `ambari_env.sh`. That will configure Ambari across the cluster & handle all HDP prerequisites, but not trigger the Ambari Blueprints which install HDP.
 
-Note that these steps will not be taken for you:
-
-  - initialization of HDFS /user directories _(Check the function `initialize_hdfs_dirs` in `../../libexec/hadoop_helpers.sh`)_
-  - installation of the GCS connector. _(Check `./install_gcs_connector_on_ambari.sh` & `./update_ambari_config.sh`)_
+After manually deploying your cluster, you can use `./bdutil <YOUR_FLAGS> -e platforms/hdp/ambari_manual_post_deploy_env.sh run_command_steps` to configure HDFS directories and install the GCS connector. Note it uses `run_command_steps` instead of `deploy`.
 
 ### Can I re-use the attached persistent disk(s) across deployments?
 
@@ -170,9 +167,9 @@ Another would be to use `gs://` _(Google Cloud Storage)_ instead of `hdfs://` in
 
 By default, HDFS is on **attached disks** _('pd-standard' or 'pd-ssd')_.
 - the size and type can be set in `ambari.conf`
- 
+
 The rest of the system resides on the **local boot disk**, unless configured otherwise.
- 
+
 **Google Cloud Storage** is also available with **`gs://`**. It can be used anywhere that `hdfs://` is available, such as but not limited to mapreduce & `hadoop fs` operations.
 
   - Note: Adding an additional slash (`gs:///`) will allow you to use the default bucket (defined at cluster build) without needing to specific it.

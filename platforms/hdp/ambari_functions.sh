@@ -30,10 +30,11 @@ function ambari_wait() {
 }
 
 # Only useful during a fresh install where we expect no failures
-# Will not work if any requested FAILED/TIMEDOUT/ABORTED
+# Will not work if any requested TIMEDOUT/ABORTED
 function ambari_wait_requests_completed() {
+      AMBARI_CLUSTER=$(get_ambari_cluster_name)
       # Poll for completion
-      ambari_wait "${AMBARI_CURL} ${AMBARI_API}/clusters/${PREFIX}/requests \
+      ambari_wait "${AMBARI_CURL} ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/requests \
             | grep -Eo 'http://.*/requests/[^\"]+' \
             | tail -1 \
             | xargs ${AMBARI_CURL} \
@@ -44,27 +45,29 @@ function ambari_wait_requests_completed() {
 }
 
 function ambari_service_stop() {
+    AMBARI_CLUSTER=$(get_ambari_cluster_name)
     if [ -x ${SERVICE+x} ]; then
         echo "Taking no action as no SERVICE was defined. You may specific ALL to stop all Services."
     else
         AMBARI_REQUEST='{"RequestInfo": {"context" :"Stop '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}'
         if [ "${SERVICE}" = "ALL" ]; then
-            ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${PREFIX}/services/
+            ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/services/
         else
-            ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE}
+            ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/services/${SERVICE}
         fi
     fi
 }
 
 function ambari_service_start() {
+    AMBARI_CLUSTER=$(get_ambari_cluster_name)
     if [ -x ${SERVICE+x} ]; then
         echo "Taking no action as no SERVICE was defined"
     else
         AMBARI_REQUEST='{"RequestInfo": {"context" :"Start '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}'
         if [ "${SERVICE}" = "ALL" ]; then
-            ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${PREFIX}/services/
+            ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/services/
         else
-            ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${PREFIX}/services/${SERVICE}
+            ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/services/${SERVICE}
         fi
     fi
 }
@@ -78,11 +81,26 @@ function ambari_service_restart() {
 }
 
 function ambari_restart_all_services() {
-    SERVICES=($(${AMBARI_CURL} ${AMBARI_API}/clusters/${PREFIX}/services \
+    AMBARI_CLUSTER=$(get_ambari_cluster_name)
+    SERVICES=($(${AMBARI_CURL} ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/services \
         | grep -Eo 'http://.*/services/[^\"]+'))
 
     for STATE in 'INSTALLED' 'STARTED'; do
       ${AMBARI_CURL} -X PUT -d "{\"ServiceInfo\":{\"state\":\"${STATE}\"}}" "${SERVICES[@]}"
       ambari_wait_requests_completed
     done
+}
+
+# Make variable substitutions in a json file.
+function subsitute_bash_in_json() {
+  local custom_configuration_file="$1"
+  loginfo "Replacing variables in ${custom_configuration_file}."
+  perl -pi -e 's/\$\{([^\}]*)\}/$ENV{$1}/e' ${custom_configuration_file}
+}
+
+# Print out name of first (and presumably only) cluster in Ambari.
+function get_ambari_cluster_name() {
+  ${AMBARI_CURL} ${AMBARI_API}/clusters \
+      | sed -n 's/.*cluster_name" : "\(\S*\)".*/\1/p' \
+      | head -1
 }
