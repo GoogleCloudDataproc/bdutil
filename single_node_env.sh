@@ -22,20 +22,12 @@ NUM_WORKERS=1
 # JDK with compiler/tools instead of just the minimal JRE.
 INSTALL_JDK_DEVEL=true
 
+# Save away the base evaluate_late_variable_bindings function so we can
+# override it.
+copy_func evaluate_late_variable_bindings old_evaluate_late_variable_bindings
+
 function evaluate_late_variable_bindings() {
-  normalize_boolean 'STRIP_EXTERNAL_MIRRORS'
-  normalize_boolean 'ENABLE_HDFS'
-  normalize_boolean 'INSTALL_GCS_CONNECTOR'
-  normalize_boolean 'INSTALL_BIGQUERY_CONNECTOR'
-  normalize_boolean 'INSTALL_DATASTORE_CONNECTOR'
-  normalize_boolean 'USE_ATTACHED_PDS'
-  normalize_boolean 'CREATE_ATTACHED_PDS_ON_DEPLOY'
-  normalize_boolean 'DELETE_ATTACHED_PDS_ON_DELETE'
-  normalize_boolean 'VERBOSE_MODE'
-  normalize_boolean 'DEBUG_MODE'
-  normalize_boolean 'OLD_HOSTNAME_SUFFIXES'
-  normalize_boolean 'ENABLE_NFS_GCS_FILE_CACHE'
-  normalize_boolean 'INSTALL_JDK_DEVEL'
+  old_evaluate_late_variable_bindings
 
   # In the case of the single-node cluster, we'll just use the whole PREFIX
   # as the name of the master and worker.
