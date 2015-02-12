@@ -23,6 +23,8 @@
 ## There should be nothing to edit here, use ambari.conf              ##
 ########################################################################
 
+# Remove core bdutil upload files.
+UPLOAD_FILES=()
 
 # Import hadoop2_env.sh just for the GCS_CONNECTOR_JAR.
 import_env hadoop2_env.sh
@@ -34,6 +36,8 @@ GCE_IMAGE='centos-6'
 
 # Create attached storage
 USE_ATTACHED_PDS=true
+# Since we'll be using HDFS as the default file system, size disks to grant
+# maximum I/O per VM.
 WORKER_ATTACHED_PDS_SIZE_GB=1500
 MASTER_ATTACHED_PD_SIZE_GB=1500
 
@@ -54,10 +58,10 @@ AMBARI_REPO=${AMBARI_REPO:-http://public-repo-1.hortonworks.com/ambari/centos6/1
 AMBARI_PUBLIC=${AMBARI_PUBLIC:-false}
 normalize_boolean 'AMBARI_PUBLIC'
 
-# Since we'll be using HDFS as the default_fs, set some reasonably beefy
-# disks.
+# HDFS will always be the default file system (even if changed here), because
+# many services require it to be. This is purely advisory.
+DEFAULT_FS='hdfs'
 
-readonly DEFAULT_FS='hdfs'
 GCS_CACHE_CLEANER_USER='hdfs'
 GCS_CACHE_CLEANER_LOG_DIRECTORY="/var/log/hadoop/${GCS_CACHE_CLEANER_USER}"
 GCS_CACHE_CLEANER_LOGGER='INFO,RFA'
@@ -72,11 +76,8 @@ MASTER_UI_PORTS=('8080')
 import_env platforms/hdp/ambari_functions.sh
 
 if [[ -n "${BDUTIL_DIR}" ]]; then
-  UPLOAD_FILES=(
-    "${BDUTIL_DIR}/hadoop2_env.sh"
+  UPLOAD_FILES+=(
     "${BDUTIL_DIR}/libexec/hadoop_helpers.sh"
-    "${BDUTIL_DIR}/platforms/hdp/ambari_functions.sh"
-    "${BDUTIL_DIR}/platforms/hdp/ambari.conf"
     "${BDUTIL_DIR}/platforms/hdp/resources/public-hostname-gcloud.sh"
     "${BDUTIL_DIR}/platforms/hdp/resources/thp-disable.sh"
   )

@@ -17,10 +17,8 @@
 source hadoop_helpers.sh
 
 # initialize hdfs dirs
-if [ "${DEFAULT_FS}" = 'hdfs' ]; then
-    loginfo "Set up HDFS /tmp and /user dirs"
-    initialize_hdfs_dirs
-fi
+loginfo "Set up HDFS /tmp and /user dirs"
+initialize_hdfs_dirs
 
 # update hadoop configuration to include the gcs connector
 if (( ${INSTALL_GCS_CONNECTOR} )) ; then
