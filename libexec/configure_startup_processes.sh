@@ -59,13 +59,17 @@ for DAEMON in "${HADOOP_DAEMONS[@]}"; do
     DAEMON_SCRIPT+="${HADOOP_2_DAEMON_SCRIPTS[${SERVICE}]}"
   fi
 
-  # Explicitly add $network, because systemd does not understand $all.
-  DEPENDENCIES='$all $network'
+  DEPENDENCIES='$all'
 
-  # If the service relies on the existence of the GCS file cache wait for autofs
-  if (( ${INSTALL_GCS_CONNECTOR} && ${ENABLE_NFS_GCS_FILE_CACHE} )) &&
-      [[ "${SERVICE}" != 'hdfs' ]]; then
-    DEPENDENCIES+=' autofs'
+  if [[ -x $(which systemctl) ]]; then
+    # Explicitly add $network, because systemd does not understand $all.
+    DEPENDENCIES+=' $network'
+
+    # If the service relies on the existence of the GCS file cache wait for autofs
+    if (( ${INSTALL_GCS_CONNECTOR} && ${ENABLE_NFS_GCS_FILE_CACHE} )) &&
+        [[ "${SERVICE}" != 'hdfs' ]]; then
+      DEPENDENCIES+=' autofs'
+    fi
   fi
 
   INIT_SCRIPT=/etc/init.d/hadoop-${DAEMON}
