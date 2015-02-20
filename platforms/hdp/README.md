@@ -96,7 +96,7 @@ Use the cluster
 ### SSH
 
 * You'll have immediate SSH access with: `./bdutil shell`
-* Or update your SSH config with: `gcloud compute-config-ssh`
+* Or update your SSH config with: `gcloud compute config-ssh`
 
 #### Access Ambari & other services
 
@@ -148,7 +148,7 @@ The basic commands are below. Find more detail in [TEST.md](./TEST.md).
 
 ```
 ## deploy the cluster & create disks
-./bdutil -e platforms/hdp/ambari_env.sh deploy
+./bdutil -e ambari deploy
 
 ## delete the cluster but don't delete the disks
 export DELETE_ATTACHED_PDS_ON_DELETE=false
@@ -156,7 +156,7 @@ export DELETE_ATTACHED_PDS_ON_DELETE=false
 
 ## create with existing disks
 export CREATE_ATTACHED_PDS_ON_DEPLOY=false
-./bdutil -e platforms/hdp/ambari_env.sh deploy
+./bdutil -e ambari deploy
 ```
 
 Another would be to use `gs://` _(Google Cloud Storage)_ instead of `hdfs://` in your Hadoop jobs, even setting it as the default. Or backup HDFS to Google Cloud Storage before cluster deletion.
