@@ -100,6 +100,13 @@ WORKERS=()
 # unchanged if in doubt.
 WORKER_ATTACHED_PDS=()
 
+# Useful setting for extensions which want to operate exclusively on pools of
+# workers; if this is set to true, all actions that normally would be performed
+# on the master or related directly to the master are skipped, such as creating
+# the master instance, creating master disks, running commands on the master,
+# deleting the master, deleting master disks, etc.
+SKIP_MASTER=false
+
 ###############################################################################
 
 #################### Deployment/Software Configuration ########################
@@ -265,6 +272,16 @@ function normalize_boolean() {
   fi
 }
 
+# Helper to copy an existing function definition to a new function name;
+# allowing the original function name to be overridden but still able to
+# delegate to the original definition, e.g. for "extending" the function.
+# Usage: copy_func existing_function new_function_name
+function copy_func() {
+  local orig=$(declare -f ${1})
+  local new_function_def_str="function ${2} ${orig#${1}}"
+  eval "${new_function_def_str}"
+}
+
 # Overridable function which will be called after sourcing all provided env
 # files in sequence; allows environment variables which are derived from other
 # variables to reflect overrides introduced in other files. For example, by
@@ -285,6 +302,7 @@ function evaluate_late_variable_bindings() {
   normalize_boolean 'OLD_HOSTNAME_SUFFIXES'
   normalize_boolean 'ENABLE_NFS_GCS_FILE_CACHE'
   normalize_boolean 'INSTALL_JDK_DEVEL'
+  normalize_boolean 'SKIP_MASTER'
 
   # Generate WORKERS array based on PREFIX and NUM_WORKERS.
   local worker_suffix='w'

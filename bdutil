@@ -687,14 +687,19 @@ function create_cluster() {
         sleep_for_api_ops
       done
     fi
-    loginfo "Creating attached master disk: ${MASTER_ATTACHED_PD}"
-    run_gcloud_compute_cmd \
-        disks create \
-        --size=${MASTER_ATTACHED_PD_SIZE_GB} \
-        --type=${MASTER_ATTACHED_PD_TYPE} \
-        ${MASTER_ATTACHED_PD} &
+
+    if ! (( ${SKIP_MASTER} )); then
+      loginfo "Creating attached master disk: ${MASTER_ATTACHED_PD}"
+      run_gcloud_compute_cmd \
+          disks create \
+          --size=${MASTER_ATTACHED_PD_SIZE_GB} \
+          --type=${MASTER_ATTACHED_PD_TYPE} \
+          ${MASTER_ATTACHED_PD} &
+      loginfo 'Done creating disks!'
+    else
+      loginfo 'Skipping master-disk creation because SKIP_MASTER is true.'
+    fi
     await_async_jobs 'disks create'
-    loginfo 'Done creating disks!'
   fi
 
   # Start workers and master.
@@ -724,19 +729,23 @@ function create_cluster() {
       sleep_for_api_ops
     done
   fi
-  loginfo "Creating master instance: ${MASTER_HOSTNAME}"
-  if (( ${USE_ATTACHED_PDS} )); then
-    optional_disk_arg="--disk name=${MASTER_ATTACHED_PD} mode=rw"
+  if ! (( ${SKIP_MASTER} )); then
+    loginfo "Creating master instance: ${MASTER_HOSTNAME}"
+    if (( ${USE_ATTACHED_PDS} )); then
+      optional_disk_arg="--disk name=${MASTER_ATTACHED_PD} mode=rw"
+    fi
+    run_gcloud_compute_cmd \
+        instances create \
+        ${MASTER_HOSTNAME} \
+        --machine-type=${GCE_MACHINE_TYPE} \
+        --image=${GCE_IMAGE} \
+        --network=${GCE_NETWORK} \
+        --scopes ${GCE_SERVICE_ACCOUNT_SCOPES[@]//,/ } \
+        --boot-disk-type=pd-standard \
+        ${optional_disk_arg} &
+  else
+    loginfo 'Skipping master creation because SKIP_MASTER is true.'
   fi
-  run_gcloud_compute_cmd \
-      instances create \
-      ${MASTER_HOSTNAME} \
-      --machine-type=${GCE_MACHINE_TYPE} \
-      --image=${GCE_IMAGE} \
-      --network=${GCE_NETWORK} \
-      --scopes ${GCE_SERVICE_ACCOUNT_SCOPES[@]//,/ } \
-      --boot-disk-type=pd-standard \
-      ${optional_disk_arg} &
   await_async_jobs 'instances create'
 
   loginfo 'Instances all created. Entering polling loop to wait for ssh-ability'
@@ -752,7 +761,11 @@ function create_cluster() {
     wait_for_ssh ${NODE} &
     sleep_for_api_ops
   done
-  wait_for_ssh ${MASTER_HOSTNAME} &
+  if ! (( ${SKIP_MASTER} )); then
+    wait_for_ssh ${MASTER_HOSTNAME} &
+  else
+    loginfo 'Skipping wait_for_ssh because SKIP_MASTER is true.'
+  fi
 
   # Wait for all nodes to be ready.
   await_async_jobs 'wait_for_ssh'
@@ -778,8 +791,12 @@ function delete_cluster() {
       sleep_for_api_ops
     done
   fi
-  run_gcloud_compute_cmd instances delete \
-      --delete-disks=boot ${MASTER_HOSTNAME} &
+  if ! (( ${SKIP_MASTER} )); then
+    run_gcloud_compute_cmd instances delete \
+        --delete-disks=boot ${MASTER_HOSTNAME} &
+  else
+    loginfo 'Skipping master deletion because SKIP_MASTER is true.'
+  fi
   await_async_jobs 'instances delete'
   loginfo 'Done deleting VMs!'
 
@@ -798,8 +815,12 @@ function delete_cluster() {
         sleep_for_api_ops
       done
     fi
-    loginfo "Deleting attached master disk: ${MASTER_ATTACHED_PD}"
-    run_gcloud_compute_cmd disks delete ${MASTER_ATTACHED_PD} &
+    if ! (( ${SKIP_MASTER} )); then
+      loginfo "Deleting attached master disk: ${MASTER_ATTACHED_PD}"
+      run_gcloud_compute_cmd disks delete ${MASTER_ATTACHED_PD} &
+    else
+      loginfo 'Skipping master-disk deletion because SKIP_MASTER is true.'
+    fi
     await_async_jobs 'disks delete'
     loginfo 'Done deleting disks!'
   fi
@@ -1072,8 +1093,12 @@ function run_distributed_command() {
     done
   fi
   if [[ -n "${master_cmd}" ]] && [[ "${TARGET}" != workers ]]; then
-    loginfo "Invoking on master: ${master_cmd}"
-    run_remote_cmd ${MASTER_HOSTNAME} "${master_cmd}" "${master_logname}" &
+    if ! (( ${SKIP_MASTER} )); then
+      loginfo "Invoking on master: ${master_cmd}"
+      run_remote_cmd ${MASTER_HOSTNAME} "${master_cmd}" "${master_logname}" &
+    else
+      loginfo 'Skipping master command because SKIP_MASTER is true.'
+    fi
   fi
   # Wait for all the async stuff to finish before moving on.
   await_async_jobs 'ssh'
