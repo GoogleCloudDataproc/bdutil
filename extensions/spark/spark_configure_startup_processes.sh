@@ -38,7 +38,12 @@ if [[ ${SPARK_MODE} =~ ^(default|standalone)$ ]]; then
   fi
 
   for DAEMON in "${SPARK_DAEMONS[@]}"; do
-    DAEMON_SCRIPT="${SPARK_INSTALL_DIR}/sbin/spark-daemon.sh"
+    if [[ "${DAEMON}" == "master" ]]; then
+      START_SCRIPT="${SPARK_INSTALL_DIR}/sbin/start-master.sh"
+    else
+      DAEMON_SCRIPT="${SPARK_INSTALL_DIR}/sbin/start-slave.sh"
+      START_SCRIPT="${DAEMON_SCRIPT} 0 ${SPARK_MASTER}"
+    fi
     INIT_SCRIPT=/etc/init.d/spark-${DAEMON}
     cat << EOF > ${INIT_SCRIPT}
 #!/usr/bin/env bash
@@ -70,8 +75,7 @@ fi
 
 case "\$1" in
   start|stop)
-    su hadoop -c "${DAEMON_SCRIPT} \$1 ${SPARK_DAEMON_FULL_NAMES[${DAEMON}]} 0 \
-        ${SPARK_MASTER}"
+    ${START_SCRIPT}
     RETVAL=\$?
     ;;
   restart)
