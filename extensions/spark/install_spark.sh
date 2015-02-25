@@ -80,6 +80,12 @@ SPARK_DAEMON_MEMORY=$(python -c \
 SPARK_EXECUTOR_MEMORY=$(python -c \
     "print int(${TOTAL_MEM} * ${SPARK_EXECUTOR_MEMORY_FRACTION})")
 
+# Give "client" processes 1/4 of available memory; since this piece doesn't
+# by default run in a strict container, we're allowing it to be a bit
+# oversubscribed. This matches our HADOOP_CLIENT_OPTS setting for now.
+SPARK_DRIVER_MEM_MB=$(python -c "print int(${TOTAL_MEM} / 4)")
+SPARK_DRIVER_MAX_RESULT_MB=$(python -c "print int(${SPARK_DRIVER_MEM_MB} / 2)")
+
 # If YARN is setup. Shrink memory to fit on NodeManagers.
 if (( ${HADOOP_VERSION} > 1 )); then
   set +o nounset
@@ -151,8 +157,13 @@ fi
 cat << EOF >> ${SPARK_INSTALL_DIR}/conf/spark-defaults.conf
 spark.eventLog.enabled true
 spark.eventLog.dir gs://${CONFIGBUCKET}/spark-eventlog-base/${MASTER_HOSTNAME}
+
 spark.executor.memory ${SPARK_EXECUTOR_MEMORY}m
 spark.yarn.executor.memoryOverhead ${SPARK_YARN_EXECUTOR_MEMORY_OVERHEAD}
+
+spark.driver.memory ${SPARK_DRIVER_MEM_MB}m
+spark.driver.maxResultSize ${SPARK_DRIVER_MAX_RESULT_MB}m
+spark.akka.frameSize 512
 EOF
 
 # Add the spark 'bin' path to the .bashrc so that it's easy to call 'spark'
