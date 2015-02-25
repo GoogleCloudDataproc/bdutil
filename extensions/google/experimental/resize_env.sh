@@ -17,13 +17,13 @@
 # NUM_WORKERS (or -n flag) at the existing cluster size. Then:
 #
 # Deploy only the new workers, e.g. {hadoop-w-2, hadoop-w-3, hadoop-w-4}:
-# ./bdutil -e my_base_env.sh -e resize_env.sh deploy
+# ./bdutil -e my_base_env.sh -e extensions/google/experimental/resize_env.sh deploy
 #
 # Explicitly start the Hadoop daemons on just the new workers:
-# ./bdutil -e my_base_env.sh -e resize_env.sh run_command -t workers -- "service hadoop-hdfs-datanode start && service hadoop-mapreduce-tasktracker start"
+# ./bdutil -e my_base_env.sh -e extensions/google/experimental/resize_env.sh run_command -t workers -- "service hadoop-hdfs-datanode start && service hadoop-mapreduce-tasktracker start"
 #
 # If using Spark as well, explicitly start the Spark daemons on the new workers:
-# ./bdutil -e my_base_env.sh -e resize_env.sh run_command -t workers -u extensions/spark/start_single_spark_worker.sh -- "./start_single_spark_worker.sh"
+# ./bdutil -e my_base_env.sh -e extensions/google/experimental/resize_env.sh run_command -t workers -u extensions/spark/start_single_spark_worker.sh -- "./start_single_spark_worker.sh"
 #
 # Edit your base config to reflect your new cluster size:
 # echo NUM_WORKERS=5 >> my_base_env.sh
@@ -31,8 +31,10 @@
 # When resizing down, simply set the base NUM_WORKERS to the desired smaller
 # size, and set NEW_NUM_WORKERS equal to the current cluster size; this can
 # be thought of as "undo-ing" a "resize upwards" command:
-# ./bdutil -e my_base_env.sh -n 2 -e resize_env.sh delete
+# ./bdutil -e my_base_env.sh -n 2 -e extensions/google/experimental/resize_env.sh delete
 # echo NUM_WORKERS=2 >> my_base_env.sh
+#
+# TODO(dhuo): Merge into bdutil as a core command.
 NEW_NUM_WORKERS=5
 
 # During resizes, make sure to avoid touching the master node.
