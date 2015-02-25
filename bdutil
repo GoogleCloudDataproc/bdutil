@@ -945,11 +945,22 @@ function generate_config_file() {
       exit 1
     fi
   fi
-  loginfo "Creating config file '${GENERATE_CONFIG_FILENAME}' with contents:"
-  cat ${OVERRIDES_FILE}
 
-  cp ${OVERRIDES_FILE} ${GENERATE_CONFIG_FILENAME}
-  loginfo "To deploy: ./bdutil deploy -e ${GENERATE_CONFIG_FILENAME}"
+  # Add each ENV_FILE as an explicit "import_env" at the top of the generated
+  # config file. Use fully-resolved names so that the same generated config
+  # works from any directory. Start at index '1' since our resolution of
+  # ENV_FILES will include the base bdutil_env.sh at index 0.
+  cp /dev/null ${GENERATE_CONFIG_FILENAME}
+  for ENV_FILE in "${ENV_FILES[@]:1}"; do
+    local resolved_env_file=$(
+        python -c "import os.path; print os.path.realpath('${ENV_FILE}')")
+    echo "import_env ${resolved_env_file}" >> ${GENERATE_CONFIG_FILENAME}
+  done
+  cat ${OVERRIDES_FILE} >> ${GENERATE_CONFIG_FILENAME}
+
+  loginfo "Created config file '${GENERATE_CONFIG_FILENAME}' with contents:"
+  cat ${GENERATE_CONFIG_FILENAME}
+  loginfo "To deploy: ./bdutil -e ${GENERATE_CONFIG_FILENAME} deploy"
 }
 
 # Generate grouped scripts with resolved environment files and

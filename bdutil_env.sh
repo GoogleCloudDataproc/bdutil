@@ -344,11 +344,14 @@ function evaluate_late_variable_bindings() {
   BDUTIL_GCS_STAGING_DIR="${staging_dir_base}/${MASTER_HOSTNAME}"
 }
 
-# Helper to allow env_file dependency
+# Helper to allow env_file dependency. Relative paths are resolved relative to
+# BDUTIL_DIR, absolute paths taken as-is.
 function import_env() {
   local env_file=$1
   if [[ -n "${BDUTIL_DIR}" ]]; then
-    env_file=${BDUTIL_DIR}/${env_file}
+    if [[ ! "${env_file}" =~ ^/ ]]; then
+      env_file=${BDUTIL_DIR}/${env_file}
+    fi
   else
     env_file=$(basename ${env_file})
   fi
