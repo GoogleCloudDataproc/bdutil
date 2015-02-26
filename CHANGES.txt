@@ -1,4 +1,30 @@
-1.1.1 - 2015-xx-xx
+1.2.0 - 2015-02-26
+
+  1. Fixed reboots on CentOS 7.
+  2. Fixed Ambari-plugin support of reusing persistent disks across deployments.
+  3. Added support for Apache Flink.
+  4. Made all UPLOAD_FILES be relative to the bdutil directory.
+  5. Added basic HBase, CDH, and Storm plugins for bdutil.
+         ./bdutil -e hbase
+         ./bdutil -e cdh
+         ./bdutil -e storm
+  6. Only symlink the GCS connector for Client nodes.
+  7. Fixed memory allocation for Spark executors running on YARN; Created
+     extension extensions/spark/spark_on_yarn_env.sh to support Spark
+     on YARN without Spark daemons. the combination of spark_env.sh and
+     hadoop2_env.sh will allow the user to submit Spark Jobs to either the
+     Spark Master or YARN.
+  8. Enabled restart spark processes on reboot.
+  9. Added support for the GCS connector with ambari_manual_env.sh. See
+     the "Can I deploy HDP manually using Ambari" section in
+     platforms/hdp/README.md
+  10. Added an experimental env file to enable cluster resizing.
+        See extensions/google/experimental/resize_env.sh.
+  11. Updated default Spark version to 1.2.1.
+  12. Updated Spark driver memory settings to scale with VM size.
+  13. Added import_env support to generate_config.  For example:
+        "./bdutil -e spark -b my-bucket -p my-project generate_config my_env.sh"
+        makes my_env.sh contain "import_env /path/to/spark_env.sh".
 
 
 1.1.0 - 2015-01-22

@@ -44,11 +44,11 @@ CORES_PER_REDUCE_TASK=2.0
 CORES_PER_APP_MASTER=2.0
 
 # Connector with Hadoop AbstractFileSystem implemenation for YARN
-GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-1.3.2-hadoop2.jar'
+GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-1.3.3-hadoop2.jar'
 
 DATASTORE_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/datastore/datastore-connector-0.14.9-hadoop2.jar'
 
-BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/bigquery/bigquery-connector-0.5.1-hadoop2.jar'
+BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/bigquery/bigquery-connector-0.6.0-hadoop2.jar'
 
 
 HDFS_DATA_DIRS_PERM='700'

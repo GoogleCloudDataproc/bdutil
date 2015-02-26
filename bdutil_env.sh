@@ -178,10 +178,10 @@ CORES_PER_REDUCE_TASK=1.0
 JAVAOPTS='-Xms1024m -Xmx2048m'
 
 # Complete URL for downloading the GCS Connector JAR file.
-GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-1.3.2-hadoop1.jar'
+GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-1.3.3-hadoop1.jar'
 
 # Complete URL for downloading the BigQuery Connector JAR file.
-BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/bigquery/bigquery-connector-0.5.1-hadoop1.jar'
+BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/bigquery/bigquery-connector-0.6.0-hadoop1.jar'
 
 # Complete URL for downloading the Cloud Datastore Connector JAR file.
 DATASTORE_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/datastore/datastore-connector-0.14.9-hadoop1.jar'
