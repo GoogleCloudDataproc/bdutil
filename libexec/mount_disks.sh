@@ -57,8 +57,10 @@ for DISK_PATH in ${DISK_PATHS}; do
   if cut -d '#' -f 1 /etc/fstab | grep -qvw ${DATAMOUNT}; then
     DISK_UUID=$(blkid ${DISK_ID} -s UUID -o value)
     MOUNT_ENTRY=($(grep -w ${DATAMOUNT} /proc/mounts))
-    echo "UUID=${DISK_UUID} ${MOUNT_ENTRY[@]:1:3} 0 2 # added by bdutil" \
-    >> /etc/fstab
+    # Taken from /usr/share/google/safe_format_and_mount
+    MOUNT_OPTIONS='defaults,discard'
+    echo "UUID=${DISK_UUID} ${MOUNT_ENTRY[@]:1:2} ${MOUNT_OPTIONS} 0 2 \
+        # added by bdutil" >> /etc/fstab
   fi
 done
 

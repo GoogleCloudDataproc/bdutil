@@ -25,6 +25,7 @@
   13. Added import_env support to generate_config.  For example:
         "./bdutil -e spark -b my-bucket -p my-project generate_config my_env.sh"
         makes my_env.sh contain "import_env /path/to/spark_env.sh".
+  14. Use default mount options to avoid SELinux issues on reboot.
 
 
 1.1.0 - 2015-01-22
