@@ -131,6 +131,18 @@ export SPARK_LOG_DIR=${SPARK_LOG_DIR}
 export SPARK_CLASSPATH=\$SPARK_CLASSPATH:${LOCAL_GCS_JAR}
 EOF
 
+# Explicitly add everything under ${SPARK_INSTALL_DIR}/lib to SPARK_CLASSPATH
+# except spark-assembly-*.jar (redundant) and spark-examples-*.jar (has
+# class collisions).
+PACKAGED_LIBS=$(ls ${SPARK_INSTALL_DIR}/lib \
+   | grep -v 'spark-assembly' \
+   | grep -v 'spark-examples')
+for PACKAGED_LIB in ${PACKAGED_LIBS}; do
+  PACKAGE_PATH="${SPARK_INSTALL_DIR}/lib/${PACKAGED_LIB}"
+  echo "export SPARK_CLASSPATH=\$SPARK_CLASSPATH:${PACKAGE_PATH}" >> \
+      ${SPARK_INSTALL_DIR}/conf/spark-env.sh
+done
+
 # For Spark 0.9.1 and older, Spark properties must be passed in programmatically
 # or as system properties; newer versions introduce spark-defaults.conf. This
 # usage of SPARK_JAVA_OPTS is deprecated for newer versions.
