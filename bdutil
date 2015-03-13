@@ -69,6 +69,9 @@ Flags:
   -m, --machine_type
     Specify the Google Compute Engine machine type to use.
 
+  -M, --master_machine_type
+    Specify the Google Compute Engine machine type for the master node.
+
   --master_attached_pd_size_gb
     Only applicable during deployment if USE_ATTACHED_PDS is true and
     CREATE_ATTACHED_PDS_ON_DEPLOY is true. Specifies the size, in GB, of
@@ -734,10 +737,15 @@ function create_cluster() {
     if (( ${USE_ATTACHED_PDS} )); then
       optional_disk_arg="--disk name=${MASTER_ATTACHED_PD} mode=rw"
     fi
+    if (( ${GCE_MASTER_MACHINE_TYPE} )); then
+      master_machine_type="${GCE_MASTER_MACHINE_TYPE}"
+    else
+      master_machine_type="${GCE_MACHINE_TYPE}"
+    fi
     run_gcloud_compute_cmd \
         instances create \
         ${MASTER_HOSTNAME} \
-        --machine-type=${GCE_MACHINE_TYPE} \
+        --machine-type=${master_machine_type} \
         --image=${GCE_IMAGE} \
         --network=${GCE_NETWORK} \
         --scopes ${GCE_SERVICE_ACCOUNT_SCOPES[@]//,/ } \
@@ -1372,6 +1380,11 @@ function parse_input() {
       -m|--machine_type)
         validate_argument $1 $2
         echo "GCE_MACHINE_TYPE=$2" >> ${OVERRIDES_FILE}
+        shift 2
+        ;;
+      -M|--master_machine_type)
+        validate_argument $1 $2
+        echo "GCE_MASTER_MACHINE_TYPE=$2" >> ${OVERRIDES_FILE}
         shift 2
         ;;
       --master_attached_pd_size_gb)
