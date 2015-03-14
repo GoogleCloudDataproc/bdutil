@@ -69,6 +69,9 @@ Flags:
   -m, --machine_type
     Specify the Google Compute Engine machine type to use.
 
+  -M, --master_machine_type
+    Specify the Google Compute Engine machine type for the master node.
+
   --master_attached_pd_size_gb
     Only applicable during deployment if USE_ATTACHED_PDS is true and
     CREATE_ATTACHED_PDS_ON_DEPLOY is true. Specifies the size, in GB, of
@@ -552,6 +555,14 @@ function run_sanity_checks() {
         >> ${OVERRIDES_FILE}
   fi
 
+  if [[ -z "${GCE_MASTER_MACHINE_TYPE}" ]]; then
+    loginfo 'No explicit GCE_MASTER_MACHINE_TYPE provided; defaulting to' \
+        "value of GCE_MACHINE_TYPE: ${GCE_MACHINE_TYPE}"
+    GCE_MASTER_MACHINE_TYPE="${GCE_MACHINE_TYPE}"
+    echo "GCE_MASTER_MACHINE_TYPE=${GCE_MASTER_MACHINE_TYPE}" \
+        >> ${OVERRIDES_FILE}
+  fi
+
   # TODO(dhuo): Possibly all "late variable bindings" could be generated here
   # instead of actually requiring the evaluate_late_variable_bindings function.
   if [[ -z "${BDUTIL_GCS_STAGING_DIR}" ]]; then
@@ -737,7 +748,7 @@ function create_cluster() {
     run_gcloud_compute_cmd \
         instances create \
         ${MASTER_HOSTNAME} \
-        --machine-type=${GCE_MACHINE_TYPE} \
+        --machine-type=${GCE_MASTER_MACHINE_TYPE} \
         --image=${GCE_IMAGE} \
         --network=${GCE_NETWORK} \
         --scopes ${GCE_SERVICE_ACCOUNT_SCOPES[@]//,/ } \
@@ -1372,6 +1383,11 @@ function parse_input() {
       -m|--machine_type)
         validate_argument $1 $2
         echo "GCE_MACHINE_TYPE=$2" >> ${OVERRIDES_FILE}
+        shift 2
+        ;;
+      -M|--master_machine_type)
+        validate_argument $1 $2
+        echo "GCE_MASTER_MACHINE_TYPE=$2" >> ${OVERRIDES_FILE}
         shift 2
         ;;
       --master_attached_pd_size_gb)

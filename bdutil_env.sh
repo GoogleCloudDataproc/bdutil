@@ -43,6 +43,11 @@ GCE_ZONE='us-central1-a'
 # cluster setup and configuration.
 GCE_NETWORK='default'
 
+# If non-empty, specifies the machine type for the master node separately from
+# worker nodes. If empty, defaults to using the same machine type as workers
+# specified in GCE_MACHINE_TYPE.
+GCE_MASTER_MACHINE_TYPE=''
+
 # Prefix to be shared by all VM instance names in the cluster, as well as for
 # SSH configuration between the JobTracker node and the TaskTracker nodes.
 PREFIX='hadoop'
