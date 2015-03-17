@@ -367,3 +367,19 @@ if [[ -d ${directory} ]]; then
 fi
 EOF
 }
+
+function get_java_home() {
+  REAL_JAVA=$(readlink -f $(which java))
+  # Prefer JDK base if present
+  if [[ -x $(which jar) ]]; then
+    JDK_HOME=$(readlink -f $(which jar) | sed 's|/bin/jar$||')
+    # Ensure it is has the same java
+    if [[ "$(readlink -f ${JDK_HOME}/bin/java)" == "${REAL_JAVA}" ]]; then
+      echo ${JDK_HOME}
+      return
+    fi
+  fi
+  # Else just return where Java was found (JRE base).
+  sed 's|/bin/java$||' <<< ${REAL_JAVA}
+}
+

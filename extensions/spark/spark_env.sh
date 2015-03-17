@@ -50,6 +50,9 @@ SPARK_EXECUTOR_MEMORY_FRACTION='0.8'
 # memory.
 SPARK_DAEMON_MEMORY_FRACTION='0.15'
 
+# Install JDK because certain Spark commands assume jar is installed.
+INSTALL_JDK_DEVEL='true'
+
 # Spark-standalone master UI is on port 8080.
 MASTER_UI_PORTS=('8080' ${MASTER_UI_PORTS[@]})
 

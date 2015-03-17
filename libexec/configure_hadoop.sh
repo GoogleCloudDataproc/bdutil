@@ -20,7 +20,7 @@
 set -e
 
 # Set general Hadoop environment variables
-JAVA_HOME=$(readlink -f $(which java) | sed 's|/bin/java$||')
+JAVA_HOME="$(get_java_home)"
 # Place HADOOP_LOG_DIR in /hadoop (possibly on larger non-boot-disk)
 HADOOP_LOG_DIR=/hadoop/logs
 # Used for hadoop.tmp.dir

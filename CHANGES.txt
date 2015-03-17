@@ -1,3 +1,9 @@
+1.x.x - 2015-xx-xx
+
+  1. Install Java JDK with Spark; this allows spark-sql to correctly run
+  out-of-the-box.
+
+
 1.2.0 - 2015-02-26
 
   1. Fixed reboots on CentOS 7.
