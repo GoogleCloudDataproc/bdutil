@@ -152,11 +152,19 @@ if [[ "${SPARK_MASTER}" != 'default' ]]; then
   echo "spark.master ${SPARK_MASTER}" >> ${SPARK_INSTALL_DIR}/conf/spark-defaults.conf
 fi
 
+SPARK_EVENTLOG_DIR="gs://${CONFIGBUCKET}/spark-eventlog-base/${MASTER_HOSTNAME}"
+if [[ "$(hostname -s)" == "${MASTER_HOSTNAME}" ]]; then
+  source hadoop_helpers.sh
+  HDFS_SUPERUSER=$(get_hdfs_superuser)
+  DFS_CMD="sudo -i -u ${HDFS_SUPERUSER} hadoop fs"
+  ${DFS_CMD} -mkdir -p ${SPARK_EVENTLOG_DIR}
+fi
+
 # Misc Spark Properties that will be loaded by spark-submit.
 # TODO(user): Instead of single extraClassPath, use a lib directory.
 cat << EOF >> ${SPARK_INSTALL_DIR}/conf/spark-defaults.conf
 spark.eventLog.enabled true
-spark.eventLog.dir gs://${CONFIGBUCKET}/spark-eventlog-base/${MASTER_HOSTNAME}
+spark.eventLog.dir ${SPARK_EVENTLOG_DIR}
 
 spark.executor.memory ${SPARK_EXECUTOR_MEMORY}m
 spark.yarn.executor.memoryOverhead ${SPARK_YARN_EXECUTOR_MEMORY_OVERHEAD}
