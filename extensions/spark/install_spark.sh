@@ -157,7 +157,9 @@ if [[ "$(hostname -s)" == "${MASTER_HOSTNAME}" ]]; then
   source hadoop_helpers.sh
   HDFS_SUPERUSER=$(get_hdfs_superuser)
   DFS_CMD="sudo -i -u ${HDFS_SUPERUSER} hadoop fs"
-  ${DFS_CMD} -mkdir -p ${SPARK_EVENTLOG_DIR}
+  if ! ${DFS_CMD} -stat ${SPARK_EVENTLOG_DIR}; then
+    ${DFS_CMD} -mkdir -p ${SPARK_EVENTLOG_DIR}
+  fi
 fi
 
 # Misc Spark Properties that will be loaded by spark-submit.
