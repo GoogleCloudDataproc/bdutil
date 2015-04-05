@@ -57,6 +57,12 @@ if (( ${INSTALL_GCS_CONNECTOR} )) && \
   if [[ -f /usr/lib/systemd/system/nfs-server.service ]] \
       && which systemctl; then
     # Centos 7
+    if ! service rpcbind status; then
+      echo "Warning: rpcbind broken, trying to fix by installing avahi..." >&2
+      install_application "avahi-daemon" "avahi"
+      service rpcbind restart
+    fi
+
     SERVICE='nfs-server'
     systemctl enable ${SERVICE}
   elif [[ -x /etc/init.d/nfs ]] \
