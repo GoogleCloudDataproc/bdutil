@@ -158,7 +158,11 @@ if [[ "$(hostname -s)" == "${MASTER_HOSTNAME}" ]]; then
   HDFS_SUPERUSER=$(get_hdfs_superuser)
   DFS_CMD="sudo -i -u ${HDFS_SUPERUSER} hadoop fs"
   if ! ${DFS_CMD} -stat ${SPARK_EVENTLOG_DIR}; then
-    ${DFS_CMD} -mkdir -p ${SPARK_EVENTLOG_DIR}
+    if (( ${HADOOP_VERSION} > 1 )); then
+      ${DFS_CMD} -mkdir -p ${SPARK_EVENTLOG_DIR}
+    else
+      ${DFS_CMD} -mkdir ${SPARK_EVENTLOG_DIR}
+    fi
   fi
 fi
 
