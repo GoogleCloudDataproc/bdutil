@@ -34,7 +34,7 @@
 # ./bdutil -e my_base_env.sh -n 2 -e extensions/google/experimental/resize_env.sh delete
 # echo NUM_WORKERS=2 >> my_base_env.sh
 #
-# TODO(dhuo): Merge into bdutil as a core command.
+# TODO(user): Merge into bdutil as a core command.
 NEW_NUM_WORKERS=5
 
 # During resizes, make sure to avoid touching the master node.
