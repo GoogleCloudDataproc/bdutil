@@ -24,8 +24,8 @@ SPARK_MODE="standalone"
 
 # URIs of tarballs to install.
 SCALA_TARBALL_URI='gs://spark-dist/scala-2.10.3.tgz'
-SPARK_HADOOP1_TARBALL_URI='gs://spark-dist/spark-1.2.1-bin-hadoop1.tgz'
-SPARK_HADOOP2_TARBALL_URI='gs://spark-dist/spark-1.2.1-bin-hadoop2.4.tgz'
+SPARK_HADOOP1_TARBALL_URI='gs://spark-dist/spark-1.3.0-bin-hadoop1.tgz'
+SPARK_HADOOP2_TARBALL_URI='gs://spark-dist/spark-1.3.0-bin-hadoop2.4.tgz'
 
 # Directory on each VM in which to install each package.
 SCALA_INSTALL_DIR='/home/hadoop/scala-install'
@@ -49,6 +49,9 @@ SPARK_EXECUTOR_MEMORY_FRACTION='0.8'
 # increase when using larger clusters. Expressed as a fraction of total physical
 # memory.
 SPARK_DAEMON_MEMORY_FRACTION='0.15'
+
+# Install JDK because certain Spark commands assume jar is installed.
+INSTALL_JDK_DEVEL='true'
 
 # Spark-standalone master UI is on port 8080.
 MASTER_UI_PORTS=('8080' ${MASTER_UI_PORTS[@]})
