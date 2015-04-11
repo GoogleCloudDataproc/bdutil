@@ -82,6 +82,9 @@ Flags:
     CREATE_ATTACHED_PDS_ON_DEPLOY is true. Specifies the disk type,
     either 'pd-standard' or 'pd-ssd', to create for the master node.
 
+  --master_local_ssd_count
+    Number of local SSD devices to attach to the master node, in range [0, 4].
+
   --network
     Specify a network name with which to associate new virtual machines.
 
@@ -119,6 +122,9 @@ Flags:
     Only applicable during deployment if USE_ATTACHED_PDS is true and
     CREATE_ATTACHED_PDS_ON_DEPLOY is true. Specifies the disk type,
     either 'pd-standard' or 'pd-ssd', to create for the worker nodes.
+
+  --worker_local_ssd_count
+    Number of local SSD devices to attach to each worker node, in range [0, 4].
 
   -z, --zone
     Specify the Google Compute Engine zone to use.
@@ -482,6 +488,16 @@ function run_sanity_checks() {
     fi
   fi
 
+  # Enforce maximum local-ssds per VM.
+  if (( ${WORKER_LOCAL_SSD_COUNT} > 4 )); then
+    logerror 'WORKER_LOCAL_SSD_COUNT can be a maximum of 4.'
+    print_help
+  fi
+  if (( ${MASTER_LOCAL_SSD_COUNT} > 4 )); then
+    logerror 'MASTER_LOCAL_SSD_COUNT can be a maximum of 4.'
+    print_help
+  fi
+
   # Make sure GCS connector is installed if it is the default FS
   if [[ "${DEFAULT_FS}" == 'gs' ]] && (( ! "${INSTALL_GCS_CONNECTOR}" )); then
     logerror 'INSTALL_GCS_CONNECTOR must 1 if DEFAULT_FS is gs.'
@@ -737,8 +753,14 @@ function create_cluster() {
         await_async_jobs 'instances create (partial)'
         loginfo 'Done. Invoking next batch...'
       fi
+      local optional_disk_arg=''
       if (( ${USE_ATTACHED_PDS} )); then
-        local optional_disk_arg="--disk name=${WORKER_ATTACHED_PDS[${i}]} mode=rw"
+        optional_disk_arg+="--disk name=${WORKER_ATTACHED_PDS[${i}]} mode=rw "
+      fi
+      if (( ${WORKER_LOCAL_SSD_COUNT} > 0 )); then
+        for ((j = 0; j < WORKER_LOCAL_SSD_COUNT; j++)); do
+          optional_disk_arg+='--local-ssd interface=SCSI '
+        done
       fi
       run_gcloud_compute_cmd \
           instances create \
@@ -754,8 +776,14 @@ function create_cluster() {
   fi
   if ! (( ${SKIP_MASTER} )); then
     loginfo "Creating master instance: ${MASTER_HOSTNAME}"
+    local optional_disk_arg=''
     if (( ${USE_ATTACHED_PDS} )); then
-      optional_disk_arg="--disk name=${MASTER_ATTACHED_PD} mode=rw"
+      optional_disk_arg+="--disk name=${MASTER_ATTACHED_PD} mode=rw "
+    fi
+    if (( ${MASTER_LOCAL_SSD_COUNT} > 0 )); then
+      for ((j = 0; j < MASTER_LOCAL_SSD_COUNT; j++)); do
+        optional_disk_arg+='--local-ssd interface=SCSI '
+      done
     fi
     run_gcloud_compute_cmd \
         instances create \
@@ -1412,6 +1440,11 @@ function parse_input() {
         echo "MASTER_ATTACHED_PD_TYPE=$2" >> ${OVERRIDES_FILE}
         shift 2
         ;;
+      --master_local_ssd_count)
+        validate_argument $1 $2
+        echo "MASTER_LOCAL_SSD_COUNT=$2" >> ${OVERRIDES_FILE}
+        shift 2
+        ;;
       --network)
         validate_argument $1 $2
         echo "GCE_NETWORK=$2" >> ${OVERRIDES_FILE}
@@ -1469,6 +1502,11 @@ function parse_input() {
       --worker_attached_pds_type)
         validate_argument $1 $2
         echo "WORKER_ATTACHED_PDS_TYPE=$2" >> ${OVERRIDES_FILE}
+        shift 2
+        ;;
+      --worker_local_ssd_count)
+        validate_argument $1 $2
+        echo "WORKER_LOCAL_SSD_COUNT=$2" >> ${OVERRIDES_FILE}
         shift 2
         ;;
       -z|--zone)

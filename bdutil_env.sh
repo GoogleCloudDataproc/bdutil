@@ -89,6 +89,12 @@ WORKER_ATTACHED_PDS_TYPE='pd-standard'
 # either 'pd-standard' or 'pd-ssd', to create for the master node.
 MASTER_ATTACHED_PD_TYPE='pd-standard'
 
+# Number of local SSD devices to attach to each worker node, in range [0, 4].
+WORKER_LOCAL_SSD_COUNT=0
+
+# Number of local SSD devices to attach to the master node, in range [0, 4].
+MASTER_LOCAL_SSD_COUNT=0
+
 # Bash array of service-account scopes to include in the created VMs.
 # List of available scopes can be obtained with 'gcloud compute instances create --help'
 # and looking under the description for "--scopes". Must at least include
