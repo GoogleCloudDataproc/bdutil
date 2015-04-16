@@ -56,6 +56,13 @@
     </description>
   </property>
   <property>
+    <name>dfs.permissions.supergroup</name>
+    <value>hadoop</value>
+    <description>
+      The name of the group of super-users.
+    </description>
+  </property>
+  <property>
     <name>dfs.replication</name>
     <value>2</value>
     <description>

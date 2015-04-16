@@ -178,8 +178,7 @@ function initialize_hdfs_dirs() {
   local dfs_cmd="sudo -i -u ${hdfs_superuser} hadoop fs"
   loginfo "Setting up HDFS /tmp directories."
   if ! ${dfs_cmd} -stat /tmp ; then
-    ${dfs_cmd} -mkdir -p /tmp/hadoop-yarn/history
-    ${dfs_cmd} -mkdir -p /tmp/hadoop-yarn/staging
+    ${dfs_cmd} -mkdir -p /tmp/hadoop-yarn/staging/history
   fi
   ${dfs_cmd} -chmod -R 1777 /tmp
 
