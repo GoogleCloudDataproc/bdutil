@@ -541,6 +541,18 @@ function run_sanity_checks() {
     fi
   fi
 
+  if [[ -z "${GCE_ZONE}" ]]; then
+    loginfo 'No zone provided; using default gcloud zone'
+    GCE_ZONE="$(gcloud config list compute/zone | grep zone | cut -d'=' -f2 | tr -d ' ')"
+    if [[ -n "${GCE_ZONE}" ]]; then
+      loginfo "Using project '${GCE_ZONE}'"
+      echo "GCE_ZONE=${GCE_ZONE}" >> ${OVERRIDES_FILE}
+    else
+      logerror 'Cannot find zone using gcloud.'
+      print_help
+    fi
+  fi
+
   if [[ -z "${WORKER_ATTACHED_PDS_TYPE}" ]]; then
     loginfo 'No WORKER_ATTACHED_PDS_TYPE provided; defaulting to pd-standard.'
     WORKER_ATTACHED_PDS_TYPE='pd-standard'
