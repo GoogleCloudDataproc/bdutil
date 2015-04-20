@@ -19,6 +19,7 @@ set -e
 # Download and use bdconfig for xml configuration.
 if [[ ! -f "$(which bdconfig)" ]]; then
   download_bd_resource "${BDCONFIG}" /tmp/bdconfig.tar.gz
+  mkdir -p /usr/local/share/google
   tar -C /usr/local/share/google -xzf /tmp/bdconfig.tar.gz
   ln -s /usr/local/share/google/bdconfig*/bdconfig /usr/local/bin
 fi
