@@ -1014,6 +1014,15 @@ function generate_config_file() {
   loginfo "To deploy: ./bdutil -e ${GENERATE_CONFIG_FILENAME} deploy"
 }
 
+# Copy the contents of all listed input files to STDOUT, appending a
+# newline to each file.
+function write_files_with_newlines() {
+  for file in $@; do
+    cat "$file"
+    echo ""
+  done
+}
+
 # Generate grouped scripts with resolved environment files and
 # add them to UPLOAD_FILES.
 function generate_scripts_from_command_groups() {
@@ -1023,8 +1032,8 @@ function generate_scripts_from_command_groups() {
   cat <<EOF > "${SCRIPT_TMPDIR}/hadoop-env-setup.sh"
 #!/bin/bash
 set -e -a
-$(cat ${ENV_FILES[@]})
-$(cat ${OVERRIDES_FILE})
+$(write_files_with_newlines ${ENV_FILES[@]})
+$(write_files_with_newlines ${OVERRIDES_FILE})
 evaluate_late_variable_bindings
 set +a
 # Put the helper functions into hadoop-env-setup.sh so they can be accessed globally
