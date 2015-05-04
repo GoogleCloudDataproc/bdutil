@@ -46,7 +46,7 @@ for COMPONENT in ${COMPONENTS}; do
       # Requires HDFS to be up and running.
       # Might be CDH specific.
       oozie-setup sharelib create -fs ${NAMENODE_URI} \
-          -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz
+          -locallib /usr/lib/oozie/oozie-sharelib-yarn*
       service oozie restart
     else
       service ${COMPONENT} restart
