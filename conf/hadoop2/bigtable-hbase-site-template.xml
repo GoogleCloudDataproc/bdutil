@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+    <property>
+        <name>hbase.client.connection.impl</name>
+        <value>org.apache.hadoop.hbase.client.BigtableConnection</value>
+    </property>
+    <property>
+        <name>google.bigtable.endpoint.host</name>
+        <value><envVar name="BIGTABLE_ENDPOINT"/></value>
+    </property>
+    <property>
+        <name>google.bigtable.admin.endpoint.host</name>
+        <value><envVar name="BIGTABLE_ADMIN_ENDPOINT"/></value>
+    </property>
+    <property>
+        <name>google.bigtable.project.id</name>
+        <value><envVar name="PROJECT"/></value>
+    </property>
+    <property>
+        <name>google.bigtable.zone.name</name>
+        <value><envVar name="BIGTABLE_ZONE"/></value>
+    </property>
+    <property>
+        <name>google.bigtable.cluster.name</name>
+        <value><envVar name="BIGTABLE_CLUSTER"/></value>
+    </property>
+    <property>
+        <name>yarn.app.mapreduce.am.command-opts</name>
+        <value><envVar name="BIGTABLE_BOOT_OPTS"/></value>
+    </property>
+    <property>
+        <name>mapreduce.map.java.opts</name>
+        <value><envVar name="BIGTABLE_BOOT_OPTS"/></value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.java.opts</name>
+        <value><envVar name="BIGTABLE_BOOT_OPTS"/></value>
+    </property>
+</configuration>
