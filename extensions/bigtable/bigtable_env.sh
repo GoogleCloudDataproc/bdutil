@@ -38,11 +38,11 @@ COMMAND_STEPS+=(
 )
 
 ALPN_REMOTE_JAR=http://central.maven.org/maven2/org/mortbay/jetty/alpn/alpn-boot/7.0.0.v20140317/alpn-boot-7.0.0.v20140317.jar
-BIGTABLE_HBASE_JAR=gs://cloud-bigtable-eap/jars/current/bigtable-hbase-0.1.5.jar
+BIGTABLE_HBASE_JAR=https://storage.googleapis.com/cloud-bigtable/jars/bigtable-hbase/bigtable-hbase-0.1.5.jar
 
 # Copied from https://archive.apache.org/dist/hbase/stable/hbase-1.0.0-bin.tar.gz
 # We don't want to overload the apache servers.
-HBASE_TARBALL_URI=gs://cloud-bigtable-eap/hbase-dist/current/hbase-1.0.1-bin.tar.gz
+HBASE_TARBALL_URI=https://storage.googleapis.com/cloud-bigtable/hbase-dist/hbase-1.0.1/hbase-1.0.1-bin.tar.gz
 
 BIGTABLE_LIB_DIR=${HBASE_INSTALL_DIR}/lib/bigtable
 ALPN_CLASSPATH=${BIGTABLE_LIB_DIR}/alpn-boot-7.0.0.v20140317.jar
