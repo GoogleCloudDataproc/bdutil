@@ -48,6 +48,10 @@ GCE_NETWORK='default'
 # specified in GCE_MACHINE_TYPE.
 GCE_MASTER_MACHINE_TYPE=''
 
+# If non-zero, specifies the fraction (between 0.0 and 1.0) of worker
+# nodes that should be run as preemptible VMs.
+PREEMPTIBLE_FRACTION=0.0
+
 # Prefix to be shared by all VM instance names in the cluster, as well as for
 # SSH configuration between the JobTracker node and the TaskTracker nodes.
 PREFIX='hadoop'
@@ -329,6 +333,12 @@ function evaluate_late_variable_bindings() {
     worker_suffix='dn'
     master_suffix='nn'
   fi
+
+  # Compute NUM_PREEMPTIBLE as int(PREEMPTIBLE_FRACTION * NUM_WORKERS)
+  local frac=$PREEMPTIBLE_FRACTION
+  local n=$NUM_WORKERS
+  NUM_PREEMPTIBLE=$(echo | awk -v n1=$frac -v n2=$n '{printf("%d", n1 * n2);}')
+
   for ((i = 0; i < NUM_WORKERS; i++)); do
     WORKERS[${i}]="${PREFIX}-${worker_suffix}-${i}"
   done
