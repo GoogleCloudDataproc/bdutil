@@ -89,6 +89,9 @@ WORKER_ATTACHED_PDS_TYPE='pd-standard'
 # either 'pd-standard' or 'pd-ssd', to create for the master node.
 MASTER_ATTACHED_PD_TYPE='pd-standard'
 
+# The size of the master boot disk.
+MASTER_BOOT_DISK_SIZE_GB=
+
 # Number of local SSD devices to attach to each worker node, in range [0, 4].
 WORKER_LOCAL_SSD_COUNT=0
 
@@ -110,6 +113,9 @@ WORKERS=()
 # is true. Generated inside 'evaluate_late_variable_bindings' by default; leave
 # unchanged if in doubt.
 WORKER_ATTACHED_PDS=()
+
+# The size of the worker boot disks.
+WORKER_BOOT_DISK_SIZE_GB=
 
 # Useful setting for extensions which want to operate exclusively on pools of
 # workers; if this is set to true, all actions that normally would be performed

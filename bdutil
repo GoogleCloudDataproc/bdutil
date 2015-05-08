@@ -69,6 +69,9 @@ Flags:
   -m, --machine_type
     Specify the Google Compute Engine machine type to use.
 
+  --master_boot_disk_size_gb
+    The size of the master boot disk.
+
   -M, --master_machine_type
     Specify the Google Compute Engine machine type for the master node.
 
@@ -125,6 +128,9 @@ Flags:
 
   --worker_local_ssd_count
     Number of local SSD devices to attach to each worker node, in range [0, 4].
+
+  --worker_boot_disk_size_gb
+    The size of the worker boot disks.
 
   -z, --zone
     Specify the Google Compute Engine zone to use.
@@ -591,6 +597,15 @@ function run_sanity_checks() {
         >> ${OVERRIDES_FILE}
   fi
 
+  if (( MASTER_BOOT_DISK_SIZE_GB != 0 && MASTER_BOOT_DISK_SIZE_GB < 10 )); then
+    logerror 'MASTER_BOOT_DISK_SIZE_GB must be a minimum of 10.'
+    print_help
+  fi
+  if (( WORKER_BOOT_DISK_SIZE_GB != 0 && WORKER_BOOT_DISK_SIZE_GB < 10 )); then
+    logerror 'WORKER_BOOT_DISK_SIZE_GB must be a minimum of 10.'
+    print_help
+  fi
+
   # TODO(dhuo): Possibly all "late variable bindings" could be generated here
   # instead of actually requiring the evaluate_late_variable_bindings function.
   if [[ -z "${BDUTIL_GCS_STAGING_DIR}" ]]; then
@@ -757,6 +772,9 @@ function create_cluster() {
       if (( ${USE_ATTACHED_PDS} )); then
         optional_disk_arg+="--disk name=${WORKER_ATTACHED_PDS[${i}]} mode=rw "
       fi
+      if (( WORKER_BOOT_DISK_SIZE_GB > 0 )); then
+        optional_disk_arg+="--boot-disk-size=${WORKER_BOOT_DISK_SIZE_GB} "
+      fi
       if (( ${WORKER_LOCAL_SSD_COUNT} > 0 )); then
         for ((j = 0; j < WORKER_LOCAL_SSD_COUNT; j++)); do
           optional_disk_arg+='--local-ssd interface=SCSI '
@@ -779,6 +797,9 @@ function create_cluster() {
     local optional_disk_arg=''
     if (( ${USE_ATTACHED_PDS} )); then
       optional_disk_arg+="--disk name=${MASTER_ATTACHED_PD} mode=rw "
+    fi
+    if (( MASTER_BOOT_DISK_SIZE_GB > 0 )); then
+      optional_disk_arg+="--boot-disk-size=${MASTER_BOOT_DISK_SIZE_GB} "
     fi
     if (( ${MASTER_LOCAL_SSD_COUNT} > 0 )); then
       for ((j = 0; j < MASTER_LOCAL_SSD_COUNT; j++)); do
@@ -1449,6 +1470,11 @@ function parse_input() {
         echo "MASTER_ATTACHED_PD_TYPE=$2" >> ${OVERRIDES_FILE}
         shift 2
         ;;
+      --master_boot_disk_size_gb)
+        validate_argument $1 $2
+        echo "MASTER_BOOT_DISK_SIZE_GB=$2" >> ${OVERRIDES_FILE}
+        shift 2
+        ;;
       --master_local_ssd_count)
         validate_argument $1 $2
         echo "MASTER_LOCAL_SSD_COUNT=$2" >> ${OVERRIDES_FILE}
@@ -1516,6 +1542,11 @@ function parse_input() {
       --worker_local_ssd_count)
         validate_argument $1 $2
         echo "WORKER_LOCAL_SSD_COUNT=$2" >> ${OVERRIDES_FILE}
+        shift 2
+        ;;
+      --worker_boot_disk_size_gb)
+        validate_argument $1 $2
+        echo "WORKER_BOOT_DISK_SIZE_GB=$2" >> ${OVERRIDES_FILE}
         shift 2
         ;;
       -z|--zone)
