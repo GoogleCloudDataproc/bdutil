@@ -64,6 +64,16 @@
     </description>
   </property>
   <property>
+    <name>mapreduce.jobtracker.expire.trackers.interval</name>
+    <value>60000</value>
+    <description>
+      The time-interval, in milliseconds, after which a tasktracker is
+      declared 'lost' if it doesn't send heartbeats.  The Hadoop
+      distribution default is 600000 (10 minutes), we set this to
+      60000 (1 minute) to quickly reassign work.
+    </description>
+  </property>
+  <property>
     <name>mapred.local.dir</name>
     <value><envVar name="MAPRED_LOCAL_DIRS"/></value>
     <description>

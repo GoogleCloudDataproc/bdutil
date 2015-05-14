@@ -100,6 +100,9 @@ Flags:
     used if necessary for interacting with older existing clusters,
     as the old naming scheme is deprecated and will eventually be removed.
 
+  --preemptible
+    The fraction (between 0.0 and 1.0) of worker nodes to run as preemptible.
+
   -P, --prefix
     Common prefix for cluster nodes.
 
@@ -336,6 +339,7 @@ function prompt_confirmation() {
       GCE_IMAGE='${GCE_IMAGE?}'
       GCE_ZONE='${GCE_ZONE?}'
       GCE_NETWORK='${GCE_NETWORK?}'
+      PREEMPTIBLE_FRACTION=${PREEMPTIBLE_FRACTION?}
       PREFIX='${PREFIX?}'
       NUM_WORKERS=${NUM_WORKERS?}
       MASTER_HOSTNAME='${MASTER_HOSTNAME}'
@@ -403,6 +407,7 @@ function run_gcloud_compute_cmd() {
   # Add global flags
   gcloud_flags+=("--project=${PROJECT}")
   gcloud_flags+=('--quiet')
+
   gcloud_compute_args+=("--zone=${GCE_ZONE}")
 
   if (( ${DEBUG_MODE} )); then
@@ -465,6 +470,26 @@ function run_sanity_checks() {
     print_help
   fi
 
+  # Make sure the preemptible fraction could be a fraction
+  if [[ ! ${PREEMPTIBLE_FRACTION} =~ ^[0-1]?(\.[0-9]+)?$ ]]; then
+    logerror "Preemptible fraction '${PREEMPTIBLE_FRACTION}' not a fraction."
+    print_help
+  fi
+
+  # Make sure the preemptible fraction is in range.
+  local lt0=$(echo | awk -v x=${PREEMPTIBLE_FRACTION} '{print (x < 0) ? 1 : 0}')
+  local gt1=$(echo | awk -v x=${PREEMPTIBLE_FRACTION} '{print (x > 1) ? 1 : 0}')
+
+  if [[ $lt0 -eq 1 ]]; then
+    logerror "Preemptible fraction '${PREEMPTIBLE_FRACTION}' is less than 0.0"
+    print_help
+  fi
+
+  if [[ $gt1 -eq 1 ]]; then
+    logerror "Preemptible fraction '${PREEMPTIBLE_FRACTION}' greater than 1.0"
+    print_help
+  fi
+
   # Make sure the hostnames all abide by the PREFIX.
   local node=''
   for node in ${WORKERS[@]} ${MASTER_HOSTNAME?}; do
@@ -514,6 +539,15 @@ function run_sanity_checks() {
   if [[ "${DEFAULT_FS}" == 'hdfs' ]] && (( ! "${ENABLE_HDFS}" )); then
     logerror 'ENABLE_HDFS must 1 if DEFAULT_FS is hdfs.'
     print_help
+  fi
+
+  # Make sure preemptible is only used with gs
+  local gt0=$(echo | awk -v x=${PREEMPTIBLE_FRACTION} '{print (x > 0) ? 1 : 0}')
+  if [[ "${DEFAULT_FS}" != 'gs' ]]; then
+    if [[ "$gt0" -eq 1 ]]; then
+      logerror 'Preemptible VMs can only be used with GCS as the DEFAULT_FS.'
+      print_help
+    fi
   fi
 
   local scheme=${HADOOP_TARBALL_URI%%://*}
@@ -780,10 +814,17 @@ function create_cluster() {
           optional_disk_arg+='--local-ssd interface=SCSI '
         done
       fi
+
+      local optional_preemptible_arg=""
+      if (( ${i} < NUM_PREEMPTIBLE )); then
+        optional_preemptible_arg="--preemptible"
+      fi
+
       run_gcloud_compute_cmd \
           instances create \
            ${WORKERS[${i}]} \
           --machine-type=${GCE_MACHINE_TYPE} \
+          ${optional_preemptible_arg} \
           --image=${GCE_IMAGE} \
           --network=${GCE_NETWORK} \
           --scopes ${GCE_SERVICE_ACCOUNT_SCOPES[@]//,/ } \
@@ -1498,6 +1539,12 @@ function parse_input() {
           echo "OLD_HOSTNAME_SUFFIXES=true" >> ${OVERRIDES_FILE}
           shift
         fi
+        ;;
+      --preemptible)
+        validate_argument $1 $2
+
+        echo "PREEMPTIBLE_FRACTION=$2" >> ${OVERRIDES_FILE}
+        shift 2
         ;;
       -P|--prefix)
         validate_argument $1 $2
