@@ -89,12 +89,18 @@ if (( ${INSTALL_GCS_CONNECTOR} )) && \
 
   # Lower grace times for lock re-acquisition post-NFS-restart.
   # This setting is not sticky across boot.
-  run_with_retries \
-      overwrite_file_with_strings '/proc/sys/fs/nfs/nlm_grace_period' '10'
-  run_with_retries \
-      overwrite_file_with_strings '/proc/fs/nfsd/nfsv4gracetime' '10'
-  run_with_retries \
-      overwrite_file_with_strings '/proc/fs/nfsd/nfsv4leasetime' '10'
+  if [[ -e '/proc/sys/fs/nfs/nlm_grace_period' ]]; then
+    run_with_retries \
+        overwrite_file_with_strings '/proc/sys/fs/nfs/nlm_grace_period' '10'
+  fi
+  if [[ -e '/proc/fs/nfsd/nfsv4gracetime' ]]; then
+    run_with_retries \
+        overwrite_file_with_strings '/proc/fs/nfsd/nfsv4gracetime' '10'
+  fi
+  if [[ -e '/proc/fs/nfsd/nfsv4leasetime' ]]; then
+    run_with_retries \
+        overwrite_file_with_strings '/proc/fs/nfsd/nfsv4leasetime' '10'
+  fi
 
   service "${SERVICE}" start
 fi
