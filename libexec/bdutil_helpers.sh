@@ -160,7 +160,7 @@ function install_application() {
   fi
 
   if [[ -x $(which apt-get) ]]; then
-    if $(dpkg -s ${apt_get_package_name}); then
+    if dpkg -s ${apt_get_package_name}; then
       echo "${apt_get_package_name} already installed."
     else
       if (( ${STRIP_EXTERNAL_MIRRORS} )); then
