@@ -184,8 +184,8 @@ socksproxy           Create a SOCKS proxy running through the master node.
 
 Examples:
 
-  Deploy a 5-worker cluster with prefix 'my-cluster' and BigQuery/Datastore installed:
-  ./bdutil -b foo-bucket -n 5 -P my-cluster -e bigquery_env.sh,datastore_env.sh deploy
+  Deploy a 5-worker cluster with prefix 'my-cluster' and BigQuery installed:
+  ./bdutil -b foo-bucket -n 5 -P my-cluster -e bigquery_env.sh deploy
 
   Pipe hadoop-validate-setup.sh into a bash shell on the cluster's master node:
   ./bdutil -P my-cluster shell < ./hadoop-validate-setup.sh

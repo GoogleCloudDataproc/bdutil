@@ -44,11 +44,9 @@ CORES_PER_REDUCE_TASK=2.0
 CORES_PER_APP_MASTER=2.0
 
 # Connector with Hadoop AbstractFileSystem implemenation for YARN
-GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-1.3.3-hadoop2.jar'
+GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/gcs/gcs-connector-1.3.4-SNAPSHOT-hadoop2-20150521-171734.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1463791002&Signature=PdhJSkuW6dAyp8i%2BvXf32NuoYezTVseO3bN422Wr36WSFKpetThfgKuez9N1o%2BRbFbd5qSA3J0E5yQ6%2Bh9F3O86%2BIlUFDmJeg4NTNyKjzC1%2B5FoQLqQ0JTcdKtLXwTIO3ugDm1AP7A6to%2F0ivPf%2BVAiqiNhKLAvglGyfB5riUEk='
 
-DATASTORE_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/datastore/datastore-connector-0.14.9-hadoop2.jar'
-
-BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/bigquery/bigquery-connector-0.6.0-hadoop2.jar'
+BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/bigquery/bigquery-connector-0.6.1-SNAPSHOT-20150521-175606-hadoop2.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1463793407&Signature=mVEcy8nvAitm4jUFURwCH1nleHEeFsueY1yCHmicZhvlvn3s%2BA1slGCDTy14UrWxLa0QmwEuCDMRGXfIE6ogVPmI8u7%2B6VyBg72z0zjeiPj5JgpiV424OB6uRkVjSl480O%2BOUg9QZhxHnIxORx12a2GuhOtpuXCjzUdDS6JOqCE='
 
 
 HDFS_DATA_DIRS_PERM='700'

@@ -141,9 +141,6 @@ INSTALL_GCS_CONNECTOR=true
 # Whether or not to install and configure the BigQuery connector.
 INSTALL_BIGQUERY_CONNECTOR=false
 
-# Whether or not to install and configure the Datastore connector.
-INSTALL_DATASTORE_CONNECTOR=false
-
 # Whether or not to configure and start HDFS
 # Must be true if DEFAULT_FS is hdfs
 ENABLE_HDFS=true
@@ -195,13 +192,10 @@ CORES_PER_REDUCE_TASK=1.0
 JAVAOPTS='-Xms1024m -Xmx2048m'
 
 # Complete URL for downloading the GCS Connector JAR file.
-GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-1.3.3-hadoop1.jar'
+GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/gcs/gcs-connector-1.3.4-SNAPSHOT-hadoop1-20150521-171734.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1463791001&Signature=f0kMCb4p737zcgr6BdhybsCSArMQ9EMc2cKhT%2FrSfCg50VbUQflEmBIchnobFnwks1BmS0SFeu%2Flj3PjTCe34aHN0zjAaWkxGJA4cMp267IBYy6sx3Qj6yE8CYVYV2D7DTRP8qTksnrkyy%2Fc9qpCwWg%2FARJ7EKGMczloRgTk8xo='
 
 # Complete URL for downloading the BigQuery Connector JAR file.
-BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/bigquery/bigquery-connector-0.6.0-hadoop1.jar'
-
-# Complete URL for downloading the Cloud Datastore Connector JAR file.
-DATASTORE_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/datastore/datastore-connector-0.14.9-hadoop1.jar'
+BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/bigquery/bigquery-connector-0.6.1-SNAPSHOT-20150521-175606-hadoop1.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1463793407&Signature=MhWtS96xHADX51L4%2FusnpctWSRF2OYGyqrXuBSl0lSK8ET5hz9IpIGPcQZ02hSyL4JyOu0RvFkNxusXndUsr%2FkLWJTjDWPceT7DOXgxWi%2Fx9z5aO5UICIcIgrHfNyoMkeWv3NM8Sa39q1Wh0mqbPrMiM1lr3nT%2B%2BwylFDrsXQjI='
 
 # Complete URL for downloading the configuration script.
 BDCONFIG='https://storage.googleapis.com/hadoop-tools/bdconfig/bdconfig-0.28.1.tar.gz'
@@ -419,7 +413,6 @@ COMMAND_GROUPS=(
      libexec/configure_hadoop.sh
      libexec/install_and_configure_gcs_connector.sh
      libexec/install_and_configure_bigquery_connector.sh
-     libexec/install_and_configure_datastore_connector.sh
      libexec/configure_hdfs.sh
      libexec/set_default_fs.sh
      libexec/configure_startup_processes.sh
@@ -447,7 +440,6 @@ COMMAND_GROUPS=(
      libexec/install_bdconfig.sh
      libexec/install_and_configure_gcs_connector.sh
      libexec/install_and_configure_bigquery_connector.sh
-     libexec/install_and_configure_datastore_connector.sh
      libexec/set_default_fs.sh
   "
 )
