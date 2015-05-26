@@ -1,3 +1,19 @@
+1.3.0 - 2015-05-27
+
+  1. Upgraded default Hadoop 2 version to 2.6.0.
+  2. Added support for making a portion of worker VMs run as "preemptible vms"
+     by setting --preemptible or PREEMPTIBLE_FRACTION to a value between
+     0.0 and 1.0 to specify the fraction of workers to run as preemptible.
+  3. Added support for deploying onto ubuntu-12-04 or ubuntu-14-04 images.
+  4. Added support for specifying boot disk sizes via --master_boot_disk_size_gb
+     and --worker_boot_disk_size_gb or MASTER_BOOT_DISK_SIZE_GB and
+     WORKER_BOOT_DISK_SIZE_GB; uses default derived from base image if unset.
+  5. Upgraded default Spark version to 1.3.1.
+  6. Removed datastore-connector installation options and samples; the connector
+     has been deprecated since February 17th, 2015. For alternatives see:
+     https://groups.google.com/forum/#!topic/gcp-hadoop-announce/D3_OZuqn4_o
+
+
 1.2.1 - 2015-05-05
 
   1. Install Java JDK with Spark; this allows spark-sql to correctly run

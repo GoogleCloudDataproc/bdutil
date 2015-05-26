@@ -18,7 +18,7 @@ GCS_CACHE_CLEANER_LOGGER='INFO,RFA'
 
 # URI of Hadoop tarball to be deployed. Must begin with gs:// or http(s)://
 # Use 'gsutil ls gs://hadoop-dist/hadoop-*.tar.gz' to list Google supplied options
-HADOOP_TARBALL_URI="gs://hadoop-dist/hadoop-2.5.2.tar.gz"
+HADOOP_TARBALL_URI="gs://hadoop-dist/hadoop-2.6.0.tar.gz"
 
 # Directory holding config files and scripts for Hadoop
 HADOOP_CONF_DIR="${HADOOP_INSTALL_DIR}/etc/hadoop"
@@ -44,9 +44,9 @@ CORES_PER_REDUCE_TASK=2.0
 CORES_PER_APP_MASTER=2.0
 
 # Connector with Hadoop AbstractFileSystem implemenation for YARN
-GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/gcs/gcs-connector-1.3.4-SNAPSHOT-hadoop2-20150521-171734.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1463791002&Signature=PdhJSkuW6dAyp8i%2BvXf32NuoYezTVseO3bN422Wr36WSFKpetThfgKuez9N1o%2BRbFbd5qSA3J0E5yQ6%2Bh9F3O86%2BIlUFDmJeg4NTNyKjzC1%2B5FoQLqQ0JTcdKtLXwTIO3ugDm1AP7A6to%2F0ivPf%2BVAiqiNhKLAvglGyfB5riUEk='
+GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-1.4.0-hadoop2.jar'
 
-BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/bigquery/bigquery-connector-0.6.1-SNAPSHOT-20150521-175606-hadoop2.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1463793407&Signature=mVEcy8nvAitm4jUFURwCH1nleHEeFsueY1yCHmicZhvlvn3s%2BA1slGCDTy14UrWxLa0QmwEuCDMRGXfIE6ogVPmI8u7%2B6VyBg72z0zjeiPj5JgpiV424OB6uRkVjSl480O%2BOUg9QZhxHnIxORx12a2GuhOtpuXCjzUdDS6JOqCE='
+BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/bigquery/bigquery-connector-0.7.0-hadoop2.jar'
 
 
 HDFS_DATA_DIRS_PERM='700'
