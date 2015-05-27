@@ -88,3 +88,20 @@ if [ "$(hostname)" = "${MASTER_HOSTNAME}" ]; then
   fi
   chkconfig ambari-server on
 fi
+
+# Workaround for issue between 2.2.0.0 and 2.2.4.2-X where hdp-select finds
+# 2.2.4.2-X but params.hdp_stack_version is 2.2.0.0, causing setup to silently
+# fail to copy all the component tarballs like mapreduce.tar.gz and pig.tar.gz
+# into hdfs:///hdp/apps/...
+AMBARI_FUNCTIONS_DIR='lib/resource_management/libraries/functions'
+SCRIPT_BAD_CONDITION=' or not out.startswith(params.hdp_stack_version)'
+AMBARI_LIB_BASE='/usr/lib/ambari-server'
+AMBARI_COPY_TARBALLS_SCRIPT="${AMBARI_LIB_BASE}/${AMBARI_FUNCTIONS_DIR}/dynamic_variable_interpretation.py"
+if [[ -e ${AMBARI_COPY_TARBALLS_SCRIPT} ]]; then
+  sed -i "s/${SCRIPT_BAD_CONDITION}//" ${AMBARI_COPY_TARBALLS_SCRIPT}
+fi
+AMBARI_LIB_BASE='/usr/lib/ambari-agent'
+AMBARI_COPY_TARBALLS_SCRIPT="${AMBARI_LIB_BASE}/${AMBARI_FUNCTIONS_DIR}/dynamic_variable_interpretation.py"
+if [[ -e ${AMBARI_COPY_TARBALLS_SCRIPT} ]]; then
+  sed -i "s/${SCRIPT_BAD_CONDITION}//" ${AMBARI_COPY_TARBALLS_SCRIPT}
+fi

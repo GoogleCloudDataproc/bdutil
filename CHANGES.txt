@@ -12,6 +12,9 @@
   6. Removed datastore-connector installation options and samples; the connector
      has been deprecated since February 17th, 2015. For alternatives see:
      https://groups.google.com/forum/#!topic/gcp-hadoop-announce/D3_OZuqn4_o
+  7. Added workaround for a bug where ambari_env.sh and ambari_manual_env.sh
+     would fail to copy mapreduce.tar.gz, pig.tar.gz, etc., into
+     hdfs:///hdp/apps/... during setup. Ambari should now work out-of-the-box.
 
 
 1.2.1 - 2015-05-05
