@@ -27,6 +27,21 @@ tar -C ${STORM_INSTALL_TMP_DIR} -xvzf ${STORM_LOCAL_TARBALL}
 mkdir -p $(dirname ${STORM_INSTALL_DIR})
 mv ${STORM_INSTALL_TMP_DIR}/apache-storm*/ ${STORM_INSTALL_DIR}
 
+STORM_LIB_DIR="${STORM_INSTALL_DIR}/lib"
+
+if (( ${ENABLE_STORM_BIGTABLE} )); then
+  GOOGLE_STORM_LIB_DIR="${STORM_INSTALL_DIR}/lib/google"
+  mkdir -p "${GOOGLE_STORM_LIB_DIR}"
+  # Download the alpn jar.  The Alpn jar should be a fully qualified URL.
+  # download_bd_resource needs a fully qualified file path and not just a
+  # directory name to put the file in when the file to download starts with
+  # http://.
+  ALPN_JAR_NAME="${ALPN_REMOTE_JAR##*/}"
+  ALPN_BOOT_JAR="${GOOGLE_STORM_LIB_DIR}/${ALPN_JAR_NAME}"
+  download_bd_resource "${ALPN_REMOTE_JAR}" "${ALPN_BOOT_JAR}"
+fi
+
+
 mkdir -p ${STORM_VAR}
 cat << EOF | tee -a ${STORM_INSTALL_DIR}/conf/storm.yaml
 storm.zookeeper.servers:
@@ -45,7 +60,14 @@ storm.messaging.netty.buffer_size: 5242880
 storm.messaging.netty.max_retries: 100
 storm.messaging.netty.max_wait_ms: 1000
 storm.messaging.netty.min_wait_ms: 100
+
 EOF
+
+if (( ${ENABLE_STORM_BIGTABLE} )); then
+  cat << EOF | tee -a "${STORM_INSTALL_DIR}/conf/storm.yaml"
+worker.childopts: "-Xbootclasspath/p:${ALPN_BOOT_JAR}"
+EOF
+fi
 
 # Add the storm 'bin' path to the .bashrc so that it's easy to call 'storm'
 # during interactive ssh session.
