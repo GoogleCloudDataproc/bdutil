@@ -138,4 +138,13 @@
         Directories on the local machine in which to store mapreduce temp files.
     </description>
   </property>
+  <property>
+    <name>mapreduce.fileoutputcommitter.algorithm.version</name>
+    <value>2</value>
+    <description>
+      Updated file output committer algorithm in Hadoop 2.7+. Significantly
+      improves commitJob times when using the Google Cloud Storage connector.
+      See https://issues.apache.org/jira/browse/MAPEDUCE-4815 for more details.
+    </description>
+  </property>
 </configuration>
