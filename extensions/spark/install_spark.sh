@@ -189,3 +189,14 @@ add_to_path_at_login "${SPARK_INSTALL_DIR}/bin"
 
 # Assign ownership of everything to the 'hadoop' user.
 chown -R hadoop:hadoop /home/hadoop/
+
+# Configure Spark to work with Cloud Bigtable
+if [ ! -z "${ALPN_CLASSPATH:-}" ]; then 
+    # Setup bootstrap classpath
+    echo -e "spark.executor.extraJavaOptions -Xbootclasspath/p:${ALPN_CLASSPATH}" >> "${SPARK_INSTALL_DIR}/conf/spark-defaults.conf"
+    echo -e "spark.driver.extraJavaOptions -Xbootclasspath/p:${ALPN_CLASSPATH}" >> "${SPARK_INSTALL_DIR}/conf/spark-defaults.conf"
+    if [ -e "${SPARK_INSTALL_DIR}/bin/utils.sh" ]; then
+	# Spark-shell: include ALPN on bootstrap classpath (needed for Spark 1.3, not 1.4)
+	sed -i "/SUBMISSION_OPTS=()/a SUBMISSION_OPTS+=( --driver-java-options -Xbootclasspath/p:${ALPN_CLASSPATH} ) " "${SPARK_INSTALL_DIR}/bin/utils.sh"
+    fi
+fi
