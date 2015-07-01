@@ -21,9 +21,9 @@
 FLINK_MODE="standalone"
 
 # URIs of tarballs for installation.
-FLINK_HADOOP1_TARBALL_URI='gs://flink-dist/flink-0.8.0-bin-hadoop1.tgz'
-FLINK_HADOOP2_TARBALL_URI='gs://flink-dist/flink-0.8.0-bin-hadoop2.tgz'
-FLINK_HADOOP2_YARN_TARBALL_URI='gs://flink-dist/flink-0.8.0-bin-hadoop2-yarn.tgz'
+FLINK_HADOOP1_TARBALL_URI='gs://flink-dist/flink-0.9.0-bin-hadoop1.tgz'
+# Hadoop v2.6
+FLINK_HADOOP2_TARBALL_URI='gs://flink-dist/flink-0.9.0-bin-hadoop2.tgz'
 
 # Directory on each VM in which to install each package.
 FLINK_INSTALL_DIR='/home/hadoop/flink-install'
