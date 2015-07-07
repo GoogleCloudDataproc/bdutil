@@ -383,3 +383,11 @@ function get_java_home() {
   sed 's|/bin/java$||' <<< ${REAL_JAVA}
 }
 
+function is_single_node_setup() {
+  if [ ${#WORKERS[@]} == 1 ] &&
+     [ "${WORKERS[0]}" == "${MASTER_HOSTNAME}" ]; then
+    true
+  else
+    false
+  fi
+}

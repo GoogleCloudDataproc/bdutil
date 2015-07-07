@@ -36,7 +36,9 @@ if [[ "$(hostname -s)" == "${MASTER_HOSTNAME}" ]]; then
   else
     HADOOP_DAEMONS+=('yarn-resourcemanager' 'mapreduce-historyserver')
   fi
-else
+fi
+
+if [[ "$(hostname -s)" != "${MASTER_HOSTNAME}" ]] || is_single_node_setup; then
   if (( ${ENABLE_HDFS} )); then
     HADOOP_DAEMONS+=('hdfs-datanode')
   fi

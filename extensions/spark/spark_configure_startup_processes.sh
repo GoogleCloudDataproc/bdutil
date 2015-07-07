@@ -33,7 +33,8 @@ if [[ ${SPARK_MODE} =~ ^(default|standalone)$ ]]; then
 
   if [[ "$(hostname -s)" == "${MASTER_HOSTNAME}" ]]; then
     SPARK_DAEMONS+=('master')
-  else
+  fi
+  if [[ "$(hostname -s)" != "${MASTER_HOSTNAME}" ]] || is_single_node_setup; then
     SPARK_DAEMONS+=('worker')
   fi
 
