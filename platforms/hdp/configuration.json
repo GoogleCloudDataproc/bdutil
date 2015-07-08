@@ -16,6 +16,9 @@
       "hive-site" : {
         "javax.jdo.option.ConnectionPassword" : "admin"
       },
+      "mapred-site" : {
+        "mapreduce.job.working.dir" : "/user/${user.name}"
+      },
       "nagios-env" : {
         "nagios_contact" : "root@localhost"
       }
