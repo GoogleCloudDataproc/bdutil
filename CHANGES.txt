@@ -27,7 +27,7 @@
      will now automatically detect when Spark has already been installed,
      and will perform the necessary extra configuration to make Spark able
      to use the Cloud Bigtable connector. Simply import the plugins in
-     order of Spark-first: ./bdutil -e spark -e bigtable deploy
+     order of Spark-first: ./bdutil -e hadoop2 -e spark -e bigtable deploy
 
 
 1.3.0 - 2015-05-27

@@ -192,10 +192,10 @@ CORES_PER_REDUCE_TASK=1.0
 JAVAOPTS='-Xms1024m -Xmx2048m'
 
 # Complete URL for downloading the GCS Connector JAR file.
-GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/gcs/gcs-connector-1.4.1-SNAPSHOT-hadoop1-20150608-170007.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1465344281&Signature=mb6QPv1ZoKD3RFDZ5JDRREhMgNTlYC95UHhMHUefBFohvcIDzW5U8%2BDTnGCEneVRtoaZ6luWhluQlLUJKV8NFfKGAMsxyQl0DwwVtcsHsJNJZOWWQJB4vEY6bp7IEGdJ8twyfVuIen9dam690PLl%2B4tSyeynkp5Nr7d9qzuMMCY='
+GCS_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-1.4.1-hadoop1.jar'
 
 # Complete URL for downloading the BigQuery Connector JAR file.
-BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib-dev/bigquery/bigquery-connector-0.7.1-SNAPSHOT-20150608-170517-hadoop1.jar?GoogleAccessId=359641935755-j2hkfvkvflpvguhuj2dajativ5ft8856@developer.gserviceaccount.com&Expires=1465344533&Signature=ncbfkT1K7iCvxeD%2BG%2FTOZsZ1EYoC0iORvI6ULsBCPy5tSv4uBFb76zuYhbp19f271ww131J0z8q2pKH3t%2F7320YAilYzVgSPRPGk%2BhjetbcTtnuaTHkHhJsMw%2FyOjzwDdpGcjDMG7jJRlvhNwYCjc%2FSL9vZZkEqIqPezS1iKKlc='
+BIGQUERY_CONNECTOR_JAR='https://storage.googleapis.com/hadoop-lib/bigquery/bigquery-connector-0.7.1-hadoop1.jar'
 
 # Complete URL for downloading the configuration script.
 BDCONFIG='https://storage.googleapis.com/hadoop-tools/bdconfig/bdconfig-0.28.1.tar.gz'
