@@ -23,12 +23,7 @@
      as the filesystem of the input file(s) (e.g. when reading GCS files and
      the default FS is HDFS). Pig reading from GCS should now work in ambari
      bdutil deployments.
-  8. Added support for Spark on Cloud Bigtable; install_hbase_bigtable.sh
-     will now automatically detect when Spark has already been installed,
-     and will perform the necessary extra configuration to make Spark able
-     to use the Cloud Bigtable connector. Simply import the plugins in
-     order of Spark-first: ./bdutil -e hadoop2 -e spark -e bigtable deploy
-  9. Fixed a bug where Hive deployed under ambari_env.sh is unable to
+  8. Fixed a bug where Hive deployed under ambari_env.sh is unable to
      LOAD DATA INPATH 'gs://<...>' due to Hive server needing to be restarted
      after GCS connector installation to pick it up on its classpath.
 
