@@ -28,6 +28,9 @@
      and will perform the necessary extra configuration to make Spark able
      to use the Cloud Bigtable connector. Simply import the plugins in
      order of Spark-first: ./bdutil -e hadoop2 -e spark -e bigtable deploy
+  9. Fixed a bug where Hive deployed under ambari_env.sh is unable to
+     LOAD DATA INPATH 'gs://<...>' due to Hive server needing to be restarted
+     after GCS connector installation to pick it up on its classpath.
 
 
 1.3.0 - 2015-05-27

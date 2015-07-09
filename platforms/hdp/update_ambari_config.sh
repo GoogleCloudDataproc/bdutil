@@ -20,7 +20,7 @@ source hadoop_helpers.sh
 loginfo "Set up HDFS /tmp and /user dirs"
 initialize_hdfs_dirs
 
-SERVICES_TO_UPDATE='YARN MAPREDUCE2'
+SERVICES_TO_UPDATE='YARN MAPREDUCE2 HIVE'
 
 # update hadoop configuration to include the gcs connector
 if (( ${INSTALL_GCS_CONNECTOR} )) ; then
