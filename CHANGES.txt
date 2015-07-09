@@ -1,3 +1,35 @@
+1.3.1 - 2015-07-09
+
+  1. Added plugin for deploying MapR under platforms/mapr/mapr_env.sh; see
+     platforms/mapr/README.md for details.
+  2. Changed mapreduce.fileoutputcommitter.algorithm.version to "2"; this should
+     only have an effect when running with Hadoop 2.7+, where it significantly
+     speeds up job-commit time when using the GCS connector.
+     See https://issues.apache.org/jira/browse/MAPEDUCE-4815 for more details.
+  3. Added an option ENABLE_STORM_BIGTABLE to extensions/storm/storm_env.sh to
+     set up using Google Cloud Bigtable from Apache Storm.
+  4. Updated Flink version to 0.9.0.
+  5. Switched from using SPARK_CLASSPATH to using SPARK_DIST_CLASSPATH pointed
+     at the Hadoop classpath to inherit gcs-connector and other Hadoop libraries
+     on the default Spark classpath. This gets rid of a warning message about
+     SPARK_CLASSPATH deprecation when running Spark, and improves access to
+     related Hadoop libraries from Spark jobs.
+  6. Fixed reboot recovery for single-node clusters; this includes the ability
+     for single-node clusters to recover from issuing "Stop" and then "Start"
+     commands via the GCE API.
+  7. Added explicit value for mapreduce.job.working.dir in Ambari config; this
+     works around a bug in PigInputFormat where an exception is thrown with
+     "Wrong FS scheme" when the default filesystem doesn't have the same scheme
+     as the filesystem of the input file(s) (e.g. when reading GCS files and
+     the default FS is HDFS). Pig reading from GCS should now work in ambari
+     bdutil deployments.
+  8. Added support for Spark on Cloud Bigtable; install_hbase_bigtable.sh
+     will now automatically detect when Spark has already been installed,
+     and will perform the necessary extra configuration to make Spark able
+     to use the Cloud Bigtable connector. Simply import the plugins in
+     order of Spark-first: ./bdutil -e spark -e bigtable deploy
+
+
 1.3.0 - 2015-05-27
 
   1. Upgraded default Hadoop 2 version to 2.6.0.
