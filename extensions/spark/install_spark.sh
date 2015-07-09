@@ -144,6 +144,10 @@ export SPARK_JAVA_OPTS="-Dspark.local.dir=${SPARK_TMPDIR} \${SPARK_JAVA_OPTS}"
 # Will be ingored if not running on YARN
 export SPARK_JAVA_OPTS="-Dspark.yarn.executor.memoryOverhead=\
 ${SPARK_YARN_EXECUTOR_MEMORY_OVERHEAD} \${SPARK_JAVA_OPTS}"
+
+# Even though SPARK_CLASSPATH is deprecated for 1.x+, it's still necessary for
+# 0.x, where there's no SPARK_DIST_CLASSPATH.
+export SPARK_CLASSPATH+=:${LOCAL_GCS_JAR}
 EOF
 fi
 
