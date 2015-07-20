@@ -78,3 +78,65 @@ echo -e "YARN_OPTS=\"\${YARN_OPTS} -Dyarn.app.mapreduce.am.command-opts=\"${BIGT
 # the hbase classpath.
 echo -e "HBASE_OPTS=\"\${HBASE_OPTS} ${BIGTABLE_BOOT_OPTS}\"" >> "${HBASE_CONF_DIR}/hbase-env.sh"
 
+# Create bigtable wrapper shell scripts for spark-submit and spark-shell 
+if [ ! -z "${SPARK_INSTALL_DIR:-}" ]; then 
+    echo -e "#!/usr/bin/env bash" > "${HBASE_INSTALL_DIR}/bin/execute-with-bigtable.sh"
+    cat << EOF >> "${HBASE_INSTALL_DIR}/bin/execute-with-bigtable.sh"
+EXECUTE_OPT="\$1"; shift
+if [[ "\${EXECUTE_OPT}" != "spark-submit" && "\${EXECUTE_OPT}" != "spark-shell" ]]; then
+    echo "Please enter 'spark-submit' or 'spark-shell' as the first argument when calling execute-with-bigtable."
+    exit 1
+fi
+if ! which "\${EXECUTE_OPT}" ; then
+    echo "Cannot find "\${EXECUTE_OPT}" on the \\\$PATH."
+    exit 1
+fi
+CONFIG_OPTS=()
+APPLICATION_ARGS=()
+EXTRA_CLASSPATH=""
+contains_jars=0
+contains_extra_jars=0
+
+while ((\$#)); do
+    case "\$1" in
+        --jars)
+            contains_jars=1
+            # The following line is repeated twice---the first line gets the "--jars", the second lines gets the jars that comes after "--jars". Because Spark accepts other --ARGUMENT, it needs the "--jars" to tell what the jars coming after "--jars" are for.
+            CONFIG_OPTS+=("\$1"); shift
+            CONFIG_OPTS+=("\$1"); shift
+            ;;
+        --extraJars)
+            contains_extra_jars=1
+            shift
+            EXTRA_CLASSPATH="\$1"; shift
+            ;;
+        *)
+            APPLICATION_ARGS+=("\$1"); shift
+ 	    ;;
+    esac
+done
+if (( \${contains_extra_jars} )) && (( \${contains_jars} )); then
+    echo "Please only set --jars or --extraJars, not both"
+    exit 1
+elif (( \${contains_extra_jars} )); then
+    CONFIG_OPTS+=( --jars \$((hbase classpath) | tr \":\" \",\"),\${EXTRA_CLASSPATH} )
+elif (( ! \${contains_extra_jars} ))  &&  (( ! \${contains_jars} )); then #if does contain jars --> it would've been set in the previous while loop 
+    CONFIG_OPTS+=( --jars \$((hbase classpath) | tr \":\" \",\") )
+fi
+SPARK_DIST_CLASSPATH="\$(hbase classpath)" "\${EXECUTE_OPT}" "\${CONFIG_OPTS[@]}" "\${APPLICATION_ARGS[@]}"
+EOF
+    chmod 755 "${HBASE_INSTALL_DIR}/bin/execute-with-bigtable.sh"
+
+    echo -e "#!/usr/bin/env bash" > "${HBASE_INSTALL_DIR}/bin/bigtable-spark-submit"
+    cat << EOF >> "${HBASE_INSTALL_DIR}/bin/bigtable-spark-submit"
+execute-with-bigtable.sh spark-submit "\$@"
+EOF
+    chmod 755 "${HBASE_INSTALL_DIR}/bin/bigtable-spark-submit"
+
+    echo -e "#!/usr/bin/env bash" > "${HBASE_INSTALL_DIR}/bin/bigtable-spark-shell"
+    cat << EOF >> "${HBASE_INSTALL_DIR}/bin/bigtable-spark-shell"
+execute-with-bigtable.sh spark-shell "\$@"
+EOF
+    chmod 755 "${HBASE_INSTALL_DIR}/bin/bigtable-spark-shell"
+
+fi
