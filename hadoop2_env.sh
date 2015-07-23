@@ -18,7 +18,7 @@ GCS_CACHE_CLEANER_LOGGER='INFO,RFA'
 
 # URI of Hadoop tarball to be deployed. Must begin with gs:// or http(s)://
 # Use 'gsutil ls gs://hadoop-dist/hadoop-*.tar.gz' to list Google supplied options
-HADOOP_TARBALL_URI="gs://hadoop-dist/hadoop-2.6.0.tar.gz"
+HADOOP_TARBALL_URI="gs://hadoop-dist/hadoop-2.7.1.tar.gz"
 
 # Directory holding config files and scripts for Hadoop
 HADOOP_CONF_DIR="${HADOOP_INSTALL_DIR}/etc/hadoop"
