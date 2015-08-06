@@ -80,6 +80,13 @@ echo -e "HBASE_OPTS=\"\${HBASE_OPTS} ${BIGTABLE_BOOT_OPTS}\"" >> "${HBASE_CONF_D
 
 # Create bigtable wrapper shell scripts for spark-submit and spark-shell 
 if [ ! -z "${SPARK_INSTALL_DIR:-}" ]; then 
+    # If users want to install Spark and Cloud Bigtable, the Cloud Bigtable argument has to come after Spark
+    # If Spark install directory does not exist yet, it means the user includes spark_env.sh in the arguments of bdutil, but put it after bigtable_env.sh
+    if [ ! -d "${SPARK_INSTALL_DIR}" ]; then
+        logerror "If you are configuring Hadoop, Spark, and Bigtable, please order the input arguments as Hadoop -> Spark -> Bigtable."
+        exit 1
+    fi
+
     echo -e "#!/usr/bin/env bash" > "${HBASE_INSTALL_DIR}/bin/execute-with-bigtable.sh"
     cat << EOF >> "${HBASE_INSTALL_DIR}/bin/execute-with-bigtable.sh"
 EXECUTE_OPT="\$1"; shift
