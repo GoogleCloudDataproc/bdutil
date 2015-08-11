@@ -157,6 +157,13 @@ DEFAULT_FS='gs'
 # list-after-write consistency.
 ENABLE_NFS_GCS_FILE_CACHE=true
 
+# If set, uses the provided hostname for the NFS-based GCS consistency cache
+# rather than assuming the master on the cluster is always the cache server.
+# This allows a standalone cache (optionally createed with the bdutil-provided
+# standalone_nfs_cache_env.sh) to be used cross-cluster. If unset, defaults
+# to using the master of the cluster as the cache server.
+GCS_CACHE_MASTER_HOSTNAME=''
+
 # User to create which owns the directories used by the NFS GCS file cache
 # and potentially other gcs-connector-related tasks.
 GCS_ADMIN='gcsadmin'
@@ -359,6 +366,12 @@ function evaluate_late_variable_bindings() {
   # GCS directory for deployment-related temporary files.
   local staging_dir_base="gs://${CONFIGBUCKET}/bdutil-staging"
   BDUTIL_GCS_STAGING_DIR="${staging_dir_base}/${MASTER_HOSTNAME}"
+
+  # Default NFS cache host is the master node, but it can be overriden to point
+  # at an NFS server off-cluster.
+  if [[ -z "${GCS_CACHE_MASTER_HOSTNAME}" ]]; then
+    GCS_CACHE_MASTER_HOSTNAME="${MASTER_HOSTNAME}"
+  fi
 }
 
 # Helper to allow env_file dependency. Relative paths are resolved relative to

@@ -1,3 +1,11 @@
+1.3.2 - 2015-xx-xx
+
+  1. Added support for setting up a standalone NFS cache server for GCS
+     consistency using standalone_nfs_cache_env.sh, along with configurable
+     GCS_CACHE_MASTER_HOSTNAME to point subsequent clusters at the shared
+     NFS cache server. See standalone_nfs_cache_env.sh for usage.
+
+
 1.3.1 - 2015-07-09
 
   1. Added plugin for deploying MapR under platforms/mapr/mapr_env.sh; see

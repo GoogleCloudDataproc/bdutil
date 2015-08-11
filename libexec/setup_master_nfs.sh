@@ -15,7 +15,8 @@
 # Installs NFS packages and exports on the master.
 
 if (( ${INSTALL_GCS_CONNECTOR} )) && \
-   (( ${ENABLE_NFS_GCS_FILE_CACHE} )) ; then
+   (( ${ENABLE_NFS_GCS_FILE_CACHE} )) && \
+   [[ "$(hostname -s)" == "${GCS_CACHE_MASTER_HOSTNAME}" ]] ; then
   # Set up the GCS_ADMIN user.
   setup_gcs_admin
 

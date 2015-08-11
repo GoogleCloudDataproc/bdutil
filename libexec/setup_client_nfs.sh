@@ -30,7 +30,7 @@ if (( ${INSTALL_GCS_CONNECTOR} )) && \
   fi
 
   MOUNT_STRING="/${NFS_MOUNT_POINT} -fstype=nfs,defaults,rw,hard,intr"
-  MOUNT_STRING="${MOUNT_STRING} ${MASTER_HOSTNAME}:${NFS_EXPORT_POINT}"
+  MOUNT_STRING="${MOUNT_STRING} ${GCS_CACHE_MASTER_HOSTNAME}:${NFS_EXPORT_POINT}"
   echo "${MOUNT_STRING}" > /etc/auto.hadoop_gcs_metadata_cache
 
   if [[ -f /usr/lib/systemd/system/autofs.service ]] \
