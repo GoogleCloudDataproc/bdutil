@@ -6,7 +6,7 @@ Fills a text file with the bash invocation to export the following environment
 variables:
   YARN_MIN_MEM_MB- The minimum container size for the node in MB.
   YARN_MAX_MEM_MB - The maximum container size for the node in MB.
-  NODEMANAGER_MEM_MB - The total ammount of memory for containers on the node in
+  NODEMANAGER_MEM_MB - The total amount of memory for containers on the node in
       MB.
   For container types MAP, REDUCE, APP_MASTER:
     <TYPE>_MEM_MB - The default size of the <TYPE> container in MB.
@@ -139,7 +139,7 @@ class MapReduceV2ResourceCalculator(object):
           should be used for the container.
 
     Returns:
-      The ammount of memory in MB that the container should be allocated.
+      The amount of memory in MB that the container should be allocated.
     """
     rough_memory = (self.maximum_memory * rough_cores) / self.total_cores
     rounded_memory = _round_down(rough_memory,

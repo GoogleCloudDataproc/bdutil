@@ -31,21 +31,21 @@
     <name>mapreduce.map.memory.mb</name>
     <value><envVar name="MAP_MEM_MB"/></value>
     <description>
-      Default ammount of memory allocated in YARN for map tasks.
+      Default amount of memory allocated in YARN for map tasks.
     </description>
   </property>
   <property>
     <name>mapreduce.reduce.memory.mb</name>
     <value><envVar name="REDUCE_MEM_MB"/></value>
     <description>
-      Default ammount of memory allocated in YARN for reduce tasks.
+      Default amount of memory allocated in YARN for reduce tasks.
     </description>
   </property>
   <property>
     <name>yarn.app.mapreduce.am.resource.mb</name>
     <value><envVar name="APP_MASTER_MEM_MB"/></value>
     <description>
-      Default ammount of memory allocated in YARN for MapReduce AppMasters.
+      Default amount of memory allocated in YARN for MapReduce AppMasters.
     </description>
   </property>
   <property>
