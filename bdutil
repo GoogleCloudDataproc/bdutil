@@ -1813,7 +1813,16 @@ function main() {
   esac
 }
 
-BDUTIL_DIR="$(dirname $0)"
+# Resolve the script till it's not a symlink anymore
+BDUTIL_SCRIPT=$0
+while [ -h "$BDUTIL_SCRIPT" ]; do
+  DIR="$( cd -P "$( dirname "$BDUTIL_SCRIPT" )" && pwd )"
+  BDUTIL_SCRIPT="$(readlink "$BDUTIL_SCRIPT")"
+  [[ $BDUTIL_SCRIPT != /* ]] && BDUTIL_SCRIPT="$DIR/$BDUTIL_SCRIPT"
+done
+
+# Get the directory name of the resolved script
+BDUTIL_DIR="$(dirname $BDUTIL_SCRIPT)"
 
 # Call main function, unless running unit tests
 if [[ ! "${BDUTIL_RUN_UNIT_TEST}" ]]; then
