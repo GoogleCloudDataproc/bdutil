@@ -35,6 +35,7 @@ fi
 
 SPARK_TARBALL=${SPARK_TARBALL_URI##*/}
 SPARK_MAJOR_VERSION=$(sed 's/spark-\([0-9]*\).*/\1/' <<<${SPARK_TARBALL})
+SPARK_MINOR_VERSION=$(sed 's/spark-[0-9]*.\([0-9]*\).*/\1/' <<<${SPARK_TARBALL})
 gsutil cp ${SPARK_TARBALL_URI} /home/hadoop/${SPARK_TARBALL}
 tar -C /home/hadoop -xzvf /home/hadoop/${SPARK_TARBALL}
 mv /home/hadoop/spark*/ ${SPARK_INSTALL_DIR}
@@ -149,6 +150,15 @@ ${SPARK_YARN_EXECUTOR_MEMORY_OVERHEAD} \${SPARK_JAVA_OPTS}"
 # 0.x, where there's no SPARK_DIST_CLASSPATH.
 export SPARK_CLASSPATH+=:${LOCAL_GCS_JAR}
 EOF
+elif (( ${SPARK_MINOR_VERSION} >= 5 || ${SPARK_MAJOR_VERSION} > 1 )); then
+  # For Spark 1.5.0 and newer, the SparkSQL component is by default compiled
+  # with Hive 1.2.1 (up from Hive 0.13.x), which is picky about reported
+  # permissions.
+  bdconfig set_property \
+      --configuration_file ${HADOOP_CONF_DIR}/core-site.xml \
+      --name 'fs.gs.reported.permissions' \
+      --value '733' \
+      --noclobber
 fi
 
 if [[ "${SPARK_MASTER}" != 'default' ]]; then

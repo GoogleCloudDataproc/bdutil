@@ -15,6 +15,19 @@
 # Populates /etc/init.d scripts to keep processes up on startup
 
 set -e
+set +o nounset
+
+# Compute Spark major/minor version numbers.
+HADOOP_BIN="sudo -u hadoop ${HADOOP_INSTALL_DIR}/bin/hadoop"
+HADOOP_VERSION=$(${HADOOP_BIN} version | tr -cd [:digit:] | head -c1)
+if [[ "${HADOOP_VERSION}" == '2' ]]; then
+  SPARK_TARBALL_URI=${SPARK_HADOOP2_TARBALL_URI}
+else
+  SPARK_TARBALL_URI=${SPARK_HADOOP1_TARBALL_URI}
+fi
+SPARK_TARBALL=${SPARK_TARBALL_URI##*/}
+SPARK_MAJOR_VERSION=$(sed 's/spark-\([0-9]*\).*/\1/' <<<${SPARK_TARBALL})
+SPARK_MINOR_VERSION=$(sed 's/spark-[0-9]*.\([0-9]*\).*/\1/' <<<${SPARK_TARBALL})
 
  # Determine Spark master using appropriate mode
 if [[ ${SPARK_MODE} == 'standalone' ]]; then
@@ -43,7 +56,13 @@ if [[ ${SPARK_MODE} =~ ^(default|standalone)$ ]]; then
       START_SCRIPT="${SPARK_INSTALL_DIR}/sbin/start-master.sh"
     else
       DAEMON_SCRIPT="${SPARK_INSTALL_DIR}/sbin/start-slave.sh"
-      START_SCRIPT="${DAEMON_SCRIPT} 0 ${SPARK_MASTER}"
+      if (( ${SPARK_MAJOR_VERSION} == 0 ||
+          ( ${SPARK_MAJOR_VERSION} == 1 && ${SPARK_MINOR_VERSION} < 4) )); then
+        START_SCRIPT="${DAEMON_SCRIPT} 0 ${SPARK_MASTER}"
+      else
+        # The "worker number" field was removed in Spark 1.4.
+        START_SCRIPT="${DAEMON_SCRIPT} ${SPARK_MASTER}"
+      fi
     fi
     INIT_SCRIPT=/etc/init.d/spark-${DAEMON}
     cat << EOF > ${INIT_SCRIPT}
@@ -76,7 +95,7 @@ fi
 
 case "\$1" in
   start|stop)
-    ${START_SCRIPT}
+    su hadoop -c "${START_SCRIPT}"
     RETVAL=\$?
     ;;
   restart)
