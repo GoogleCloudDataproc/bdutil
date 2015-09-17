@@ -54,6 +54,10 @@ HDFS_DATA_DIRS_PERM='700'
 # 8088 for YARN, 50070 for HDFS.
 MASTER_UI_PORTS=('8088' '50070')
 
+# Allow to tune the YARN scheduler to
+YARN_SCHEDULER_CAPACITY_MAXIMUM_APPLICATIONS=10000
+YARN_SCHEDULER_CAPACITY_MAX_AM_PERCENT=0.2
+
 # Use Hadoop 2 specific configuration templates.
 if [[ -n "${BDUTIL_DIR}" ]]; then
   UPLOAD_FILES=($(find ${BDUTIL_DIR}/conf/hadoop2 -name '*template.xml'))

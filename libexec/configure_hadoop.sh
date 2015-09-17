@@ -175,3 +175,12 @@ if [[ -f yarn-template.xml ]]; then
         --clobber
   fi
 fi
+
+if [[ -f capacity-scheduler-template.xml ]]; then
+  bdconfig merge_configurations \
+      --configuration_file ${HADOOP_CONF_DIR}/capacity-scheduler.xml \
+      --source_configuration_file capacity-scheduler-template.xml \
+      --resolve_environment_variables \
+      --create_if_absent \
+      --clobber
+fi
