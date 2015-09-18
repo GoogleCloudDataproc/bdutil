@@ -22,7 +22,7 @@ import_env extensions/spark/spark_env.sh
 
 # Clusters must have at least 3 workers to run spark-validate-setup.sh
 # and many other Spark jobs.
-if [[ -n "${NUM_WORKERS}" ]] || (( ${NUM_WORKERS} < 3 )); then
+if [[ -z "${NUM_WORKERS}" ]] || (( ${NUM_WORKERS} < 3 )); then
   NUM_WORKERS=3
 fi
 
