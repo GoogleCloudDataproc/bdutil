@@ -20,7 +20,7 @@
 #
 # Usage: ./bdutil [deploy|delete] [optional: <paths to env files>]...
 
-BDUTIL_VERSION='1.3.3'
+BDUTIL_VERSION='1.3.4-SNAPSHOT'
 
 # Prints the usage for this script and exits.
 function print_usage() {
