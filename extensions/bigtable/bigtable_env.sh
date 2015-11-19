@@ -37,15 +37,15 @@ COMMAND_STEPS+=(
   'install_bigtable,install_bigtable'
 )
 
-ALPN_REMOTE_JAR=http://central.maven.org/maven2/org/mortbay/jetty/alpn/alpn-boot/7.0.0.v20140317/alpn-boot-7.0.0.v20140317.jar
-BIGTABLE_HBASE_JAR=https://storage.googleapis.com/cloud-bigtable/jars/bigtable-hbase/bigtable-hbase-1.0-0.1.9-shaded.jar
+ALPN_REMOTE_JAR=http://central.maven.org/maven2/org/mortbay/jetty/alpn/alpn-boot/8.1.3.v20150130/alpn-boot-8.1.3.v20150130.jar
+BIGTABLE_HBASE_JAR=https://storage.googleapis.com/cloud-bigtable/jars/bigtable-hbase/bigtable-hbase-mapreduce-0.2.2-shaded.jar
 
-# Copied from https://archive.apache.org/dist/hbase/stable/hbase-1.0.1.1-bin.tar.gz
+# Copied from http://www.us.apache.org/dist/hbase/stable/
 # We don't want to overload the apache servers.
-HBASE_TARBALL_URI=https://storage.googleapis.com/cloud-bigtable/hbase-dist/hbase-1.0.1.1/hbase-1.0.1.1-bin.tar.gz
+HBASE_TARBALL_URI=https://storage.googleapis.com/cloud-bigtable/hbase-dist/hbase-1.1.2/hbase-1.1.2-bin.tar.gz
 
 BIGTABLE_LIB_DIR=${HBASE_INSTALL_DIR}/lib/bigtable
-ALPN_CLASSPATH=${BIGTABLE_LIB_DIR}/alpn-boot-7.0.0.v20140317.jar
+ALPN_CLASSPATH=${BIGTABLE_LIB_DIR}/alpn-boot-8.1.3.v20150130.jar
 BIGTABLE_BOOT_OPTS="-Xms1024m -Xmx2048m -Xbootclasspath/p:${ALPN_CLASSPATH}"
 
 # TODO: JAVAOPTS gets used in mapred-template.xml.  There should probably be a better way to do this.
