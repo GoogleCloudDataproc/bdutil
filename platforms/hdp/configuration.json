@@ -1,5 +1,9 @@
 {
   "configurations" : {
+      "capacity-scheduler" : {
+        "yarn.scheduler.capacity.root.accessible-node-labels.default.capacity": "100",
+        "yarn.scheduler.capacity.root.accessible-node-labels.default.maximum-capacity": "100"
+      },
       "core-site" : {
         "fs.gs.project.id": "${PROJECT}",
         "fs.gs.system.bucket": "${CONFIGBUCKET}",
