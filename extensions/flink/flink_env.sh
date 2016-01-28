@@ -21,9 +21,9 @@
 FLINK_MODE="standalone"
 
 # URIs of tarballs for installation.
-FLINK_HADOOP1_TARBALL_URI='gs://flink-dist/flink-0.9.0-bin-hadoop1.tgz'
-# Hadoop v2.6
-FLINK_HADOOP2_TARBALL_URI='gs://flink-dist/flink-0.9.0-bin-hadoop2.tgz'
+FLINK_HADOOP1_TARBALL_URI='gs://flink-dist/flink-0.10.1-bin-hadoop1-scala_2.10.tgz'
+# Hadoop v2.7 build
+FLINK_HADOOP2_TARBALL_URI='gs://flink-dist/flink-0.10.1-bin-hadoop27-scala_2.10.tgz'
 
 # Directory on each VM in which to install each package.
 FLINK_INSTALL_DIR='/home/hadoop/flink-install'
@@ -33,26 +33,26 @@ FLINK_INSTALL_DIR='/home/hadoop/flink-install'
 FLINK_JAVA_OPTS="-DsomeOption=value"
 
 # Heap memory used by the job manager (master) determined by the physical (free) memory of the server
-# Flink config entry: jobmanager.heap.mb: {{jobmanager_heap}}
+# Flink config entry: jobmanager.heap.mb
 FLINK_JOBMANAGER_MEMORY_FRACTION='0.8'
 
 # Heap memory used by the task managers (slaves) determined by the physical (free) memory of the servers
-# Flink config entry: taskmanager.heap.mb: {{taskmanager_heap}}
+# Flink config entry: taskmanager.heap.mb
 FLINK_TASKMANAGER_MEMORY_FRACTION='0.8'
 
 # Number of task slots per task manager (worker)
 # ideally set to the number of physical cpus
 # if set to 'auto', the number of slots will be determined automatically
-# Flink config entry: taskmanager.numberOfTaskSlots: {{num_task_slots}}
+# Flink config entry: taskmanager.numberOfTaskSlots
 FLINK_TASKMANAGER_SLOTS='auto'
 
-# Default parallelization degree (number of concurrent actions per task)
+# Default parallelism (number of concurrent actions per task)
 # If set to 'auto', this will be determined automatically
-# Flink config entry: parallelization.degree.default: {{parallelization}}
-FLINK_PARALLELIZATION_DEGREE='auto'
+# Flink config entry: parallelism.default
+FLINK_PARALLELISM='auto'
 
 # The number of buffers for the network stack.
-# Flink config entry: taskmanager.network.numberOfBuffers: {{taskmanager_num_buffers}}
+# Flink config entry: taskmanager.network.numberOfBuffers
 FLINK_NETWORK_NUM_BUFFERS=2048
 
 

@@ -54,9 +54,9 @@ if [[ "${FLINK_TASKMANAGER_SLOTS}" == "auto" ]] ; then
     FLINK_TASKMANAGER_SLOTS=`grep -c processor /proc/cpuinfo`
 fi
 
-# Determine the default degree of parallelization
-if [[ "${FLINK_PARALLELIZATION_DEGREE}" == "auto" ]] ; then
-    FLINK_PARALLELIZATION_DEGREE=$(python -c \
+# Determine the default parallelism
+if [[ "${FLINK_PARALLELISM}" == "auto" ]] ; then
+    FLINK_PARALLELISM=$(python -c \
     "print ${NUM_WORKERS} * ${FLINK_TASKMANAGER_SLOTS}")
 fi
 
@@ -66,7 +66,7 @@ jobmanager.rpc.address: ${MASTER_HOSTNAME}
 jobmanager.heap.mb: ${FLINK_JOBMANAGER_MEMORY}
 taskmanager.heap.mb: ${FLINK_TASKMANAGER_MEMORY}
 taskmanager.numberOfTaskSlots: ${FLINK_TASKMANAGER_SLOTS}
-parallelization.degree.default: ${FLINK_PARALLELIZATION_DEGREE}
+parallelism.default: ${FLINK_PARALLELISM}
 taskmanager.network.numberOfBuffers: ${FLINK_NETWORK_NUM_BUFFERS}
 env.java.opts: ${FLINK_JAVA_OPTS}
 taskmanager.tmp.dirs: ${FLINK_TASKMANAGER_TEMP_DIR}
