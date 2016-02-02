@@ -17,8 +17,8 @@
 set -e
 
 # Get a list of disks from the metadata server.
-BASE_DISK_URL='http://metadata.google.internal/computeMetadata/v1beta1/instance/disks/'
-DISK_PATHS=$(curl ${BASE_DISK_URL})
+BASE_DISK_URL='http://metadata.google.internal/computeMetadata/v1/instance/disks/'
+DISK_PATHS=$(curl ${BASE_DISK_URL} -H Metadata-Flavor:Google)
 MOUNTED_DISKS=()
 
 for DISK_PATH in ${DISK_PATHS}; do
