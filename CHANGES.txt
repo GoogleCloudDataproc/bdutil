@@ -1,3 +1,9 @@
+1.3.4 - 2016-02-02
+
+  1. Updated bigtable version numbers.
+  2. Fixed handling of capacity scheduler parameters when using hdp.
+
+
 1.3.3 - 2015-11-12
 
   1. Added support for Apache Tajo via pull-request:
