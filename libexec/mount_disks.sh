@@ -18,14 +18,14 @@ set -e
 
 # Get a list of disks from the metadata server.
 BASE_DISK_URL='http://metadata.google.internal/computeMetadata/v1/instance/disks/'
-DISK_PATHS=$(curl ${BASE_DISK_URL} -H Metadata-Flavor:Google)
+DISK_PATHS=$(curl_v1_metadata "${BASE_DISK_URL}")
 MOUNTED_DISKS=()
 
 for DISK_PATH in ${DISK_PATHS}; do
   # Use the metadata server to determine the official index/name of each disk.
-  DISK_NAME=$(curl ${BASE_DISK_URL}${DISK_PATH}device-name)
-  DISK_INDEX=$(curl ${BASE_DISK_URL}${DISK_PATH}index)
-  DISK_TYPE=$(curl ${BASE_DISK_URL}${DISK_PATH}type)
+  DISK_NAME=$(curl_v1_metadata "${BASE_DISK_URL}${DISK_PATH}device-name")
+  DISK_INDEX=$(curl_v1_metadata "${BASE_DISK_URL}${DISK_PATH}index")
+  DISK_TYPE=$(curl_v1_metadata "${BASE_DISK_URL}${DISK_PATH}type")
 
   # Index '0' is the boot disk and is thus already mounted.
   if [[ "${DISK_INDEX}" == '0' ]]; then

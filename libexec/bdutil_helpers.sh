@@ -77,6 +77,12 @@ function run_with_retries() {
   fi
 }
 
+# Curl a URL from metadata with appropriate V1 headers.
+function curl_v1_metadata() {
+  local url=$1
+  curl "$url" -H Metadata-Flavor:Google
+}
+
 # Attempts to curl a passed file 3 times, waiting one second between each try.
 # If all curls fail, it allows the error to percolate.
 function curl_with_retry() {
