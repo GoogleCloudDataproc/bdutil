@@ -48,6 +48,10 @@ GCE_NETWORK='default'
 # specified in GCE_MACHINE_TYPE.
 GCE_MASTER_MACHINE_TYPE=''
 
+# Specifies a comma-separated list of tags to apply to the instances for
+# identifying the instances to which network firewall rules will apply.
+GCE_TAGS=''
+
 # If non-zero, specifies the fraction (between 0.0 and 1.0) of worker
 # nodes that should be run as preemptible VMs.
 PREEMPTIBLE_FRACTION=0.0

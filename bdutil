@@ -339,6 +339,7 @@ function prompt_confirmation() {
       GCE_IMAGE='${GCE_IMAGE?}'
       GCE_ZONE='${GCE_ZONE?}'
       GCE_NETWORK='${GCE_NETWORK?}'
+      GCE_TAGS='${GCE_TAGS?}'
       PREEMPTIBLE_FRACTION=${PREEMPTIBLE_FRACTION?}
       PREFIX='${PREFIX?}'
       NUM_WORKERS=${NUM_WORKERS?}
@@ -827,6 +828,7 @@ function create_cluster() {
           ${optional_preemptible_arg} \
           --image=${GCE_IMAGE} \
           --network=${GCE_NETWORK} \
+          --tags=${GCE_TAGS} \
           --scopes ${GCE_SERVICE_ACCOUNT_SCOPES[@]//,/ } \
           --boot-disk-type=pd-standard \
           ${optional_disk_arg} &
@@ -853,6 +855,7 @@ function create_cluster() {
         --machine-type=${GCE_MASTER_MACHINE_TYPE} \
         --image=${GCE_IMAGE} \
         --network=${GCE_NETWORK} \
+        --tags=${GCE_TAGS} \
         --scopes ${GCE_SERVICE_ACCOUNT_SCOPES[@]//,/ } \
         --boot-disk-type=pd-standard \
         ${optional_disk_arg} &
@@ -1524,6 +1527,11 @@ function parse_input() {
       --network)
         validate_argument $1 $2
         echo "GCE_NETWORK=$2" >> ${OVERRIDES_FILE}
+        shift 2
+        ;;
+      --tags)
+        validate_argument $1 $2
+        echo "GCE_TAGS=$2" >> ${OVERRIDES_FILE}
         shift 2
         ;;
       -n|--num_workers)
