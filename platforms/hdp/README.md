@@ -61,8 +61,8 @@ Quick start
 
 1. Deploy or Delete the cluster: __see './bdutil --help' for more details__
 
-* Deploy: `./bdutil -e platforms/hdp/ambari_env.sh deploy`
-* Delete: `./bdutil -e platforms/hdp/ambari_env.sh delete`
+* Deploy: `./bdutil -e ambari deploy`
+* Delete: `./bdutil -e ambari delete`
   * when deleting, ensure to use the same switches/configuration as the deploy
 
 Configuration
@@ -82,8 +82,9 @@ Here are some of the defaults to consider:
 
   ## The Hortonworks Data Platform services which will be installed.
   ##   This is nearly the entire stack
-  AMBARI_SERVICES='FALCON FLUME GANGLIA HBASE HDFS HIVE KAFKA KERBEROS
-        MAPREDUCE2 NAGIOS OOZIE PIG SLIDER SQOOP STORM TEZ YARN ZOOKEEPER'
+  AMBARI_SERVICES="ACCUMULO AMBARI_METRICS ATLAS FALCON FLUME GANGLIA HBASE HDFS
+      HIVE KAFKA MAHOUT MAPREDUCE2 OOZIE PIG SLIDER SPARK SQOOP STORM TEZ YARN
+      ZOOKEEPER"
 
   AMBARI_PUBLIC=false                ## Services listed on internal
                                      ##   hostname not public IP. Need
@@ -152,7 +153,7 @@ The basic commands are below. Find more detail in [TEST.md](./TEST.md).
 
 ## delete the cluster but don't delete the disks
 export DELETE_ATTACHED_PDS_ON_DELETE=false
-./bdutil -e platforms/hdp/ambari_env.sh delete
+./bdutil -e ambari delete
 
 ## create with existing disks
 export CREATE_ATTACHED_PDS_ON_DEPLOY=false

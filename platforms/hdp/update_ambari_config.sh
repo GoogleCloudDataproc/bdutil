@@ -18,9 +18,10 @@ source hadoop_helpers.sh
 
 # initialize hdfs dirs
 loginfo "Set up HDFS /tmp and /user dirs"
-initialize_hdfs_dirs
+initialize_hdfs_dirs admin
 
-SERVICES_TO_UPDATE='YARN MAPREDUCE2 HIVE'
+
+AMBARI_CLUSTER=$(get_ambari_cluster_name)
 
 # update hadoop configuration to include the gcs connector
 if (( ${INSTALL_GCS_CONNECTOR} )) ; then
@@ -36,8 +37,6 @@ if (( ${INSTALL_GCS_CONNECTOR} )) ; then
     # it to a sane default for easy manual experimentation of file caching.
     export GCS_FILE_CACHE_DIRECTORY='/tmp/gcs_connector_metadata_cache'
   fi
-
-  AMBARI_CLUSTER=$(get_ambari_cluster_name)
 
   # If it wasn't set at cluster creation configure the GCS connector.
   if ! /var/lib/ambari-server/resources/scripts/configs.sh \
@@ -63,15 +62,28 @@ if (( ${INSTALL_GCS_CONNECTOR} )) ; then
       set localhost ${AMBARI_CLUSTER} \
       mapred-site mapreduce.application.classpath ${NEW_CLASSPATH}
   sleep 10
+fi
 
-  loginfo "restarting services for classpath change to take affect."
-  for SERVICE in ${SERVICES_TO_UPDATE}; do
-      ambari_service_stop
-      ambari_wait_requests_completed
-      ambari_service_start
-      ambari_wait_requests_completed
+loginfo "Restarting services, because Ambari usually requires it."
+SERVICE='ALL'
+ambari_service_stop
+ambari_wait_requests_completed
+ambari_service_start
+ambari_wait_requests_completed
+
+# Check GCS connectivity
+check_filesystem_accessibility
+
+# Set up files and pig views, which was added in Ambari 2.1.
+#
+if version_at_least "${AMBARI_VERSION}" '2.1'; then
+  # This should be done automatically but it wasn't as of 2016-03-16.
+  for view in FILES PIG; do
+    # Both of these views are currently 1.0.0
+    VIEW="${AMBARI_API}/views/${view}/versions/1.0.0/instances/AUTO_${view}_INSTANCE"
+    if ${AMBARI_CURL} ${VIEW} |& grep -q '404 Not Found'; then
+      ${AMBARI_CURL} -X POST ${VIEW} \
+        -d "{\"ViewInstanceInfo\": {\"cluster_handle\": \"${AMBARI_CLUSTER}\"}}"
+    fi
   done
-
-  # check if GCS is accessible
-  check_filesystem_accessibility
 fi
