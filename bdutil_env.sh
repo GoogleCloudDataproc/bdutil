@@ -50,7 +50,8 @@ GCE_MASTER_MACHINE_TYPE=''
 
 # Specifies a comma-separated list of tags to apply to the instances for
 # identifying the instances to which network firewall rules will apply.
-GCE_TAGS=''
+# Cannot be empty, so the default is 'bdutil'.
+GCE_TAGS='bdutil'
 
 # If non-zero, specifies the fraction (between 0.0 and 1.0) of worker
 # nodes that should be run as preemptible VMs.
