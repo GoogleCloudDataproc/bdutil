@@ -1,9 +1,5 @@
 {
   "configurations" : {
-      "capacity-scheduler" : {
-        "yarn.scheduler.capacity.root.accessible-node-labels.default.capacity": "100",
-        "yarn.scheduler.capacity.root.accessible-node-labels.default.maximum-capacity": "100"
-      },
       "core-site" : {
         "fs.gs.project.id": "${PROJECT}",
         "fs.gs.system.bucket": "${CONFIGBUCKET}",
@@ -12,19 +8,17 @@
         "fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS",
         "fs.gs.metadata.cache.enable": "true",
         "fs.gs.metadata.cache.type": "${GCS_METADATA_CACHE_TYPE}",
-        "fs.gs.metadata.cache.directory": "${GCS_FILE_CACHE_DIRECTORY}"
+        "fs.gs.metadata.cache.directory": "${GCS_FILE_CACHE_DIRECTORY}",
+
+        "hadoop.proxyuser.root.hosts": "*",
+        "hadoop.proxyuser.root.groups": "*",
+        "hadoop.proxyuser.root.users": "*"
       },
       "hdfs-site" : {
         "dfs.replication" : "2"
       },
-      "hive-site" : {
-        "javax.jdo.option.ConnectionPassword" : "admin"
-      },
       "mapred-site" : {
         "mapreduce.job.working.dir" : "/user/${user.name}"
-      },
-      "nagios-env" : {
-        "nagios_contact" : "root@localhost"
       }
     }
 }

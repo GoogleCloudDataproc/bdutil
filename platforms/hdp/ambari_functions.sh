@@ -12,17 +12,17 @@ function ambari_wait() {
 
   for (( i=0; i<${limit}; i++ )); do
     local status=$(bash -c "${condition}")
-    if [ "${status}" = "${goal}" ]; then
+    echo "ambari_wait status: ${status}" >&2
+    if [[ "${status}" == "${goal}" ]]; then
       break
-    elif [ "${status}" = "${failed}" ]; then
+    elif [[ "${status}" =~ "${failed}" ]]; then
       echo "Ambari operiation failed with status: ${status}" >&2
       return 1
     fi
-    echo "ambari_wait status: ${status}" >&2
     sleep ${POLLING_INTERVAL}
   done
 
-  if [ ${i} -eq ${limit} ]; then
+  if [[ ${i} == ${limit} ]]; then
     echo "ambari_wait did not finish within" \
         "'${AMBARI_TIMEOUT}' seconds. Exiting." >&2
     return 1
@@ -32,25 +32,26 @@ function ambari_wait() {
 # Only useful during a fresh install where we expect no failures
 # Will not work if any requested TIMEDOUT/ABORTED
 function ambari_wait_requests_completed() {
+      # Avoid race conditions with requests.
+      sleep 10
       AMBARI_CLUSTER=$(get_ambari_cluster_name)
       # Poll for completion
       ambari_wait "${AMBARI_CURL} ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/requests \
-            | grep -Eo 'http://.*/requests/[^\"]+' \
-            | tail -1 \
+            | grep -Eo 'http://.*/requests/[0-9]+' \
             | xargs ${AMBARI_CURL} \
             | grep request_status \
-            | uniq \
-            | tr -cd '[:upper:]'" \
-            'COMPLETED'
+            | grep -Eo '\"[A-Z_]+\"' \
+            | sort | uniq | paste -sd'+'" \
+            '"COMPLETED"'
 }
 
 function ambari_service_stop() {
     AMBARI_CLUSTER=$(get_ambari_cluster_name)
-    if [ -x ${SERVICE+x} ]; then
+    if [[ -z "${SERVICE}" ]]; then
         echo "Taking no action as no SERVICE was defined. You may specific ALL to stop all Services."
     else
         AMBARI_REQUEST='{"RequestInfo": {"context" :"Stop '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}'
-        if [ "${SERVICE}" = "ALL" ]; then
+        if [[ "${SERVICE}" == "ALL" ]]; then
             ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/services/
         else
             ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/services/${SERVICE}
@@ -60,11 +61,11 @@ function ambari_service_stop() {
 
 function ambari_service_start() {
     AMBARI_CLUSTER=$(get_ambari_cluster_name)
-    if [ -x ${SERVICE+x} ]; then
+    if [[ -z "${SERVICE}" ]]; then
         echo "Taking no action as no SERVICE was defined"
     else
         AMBARI_REQUEST='{"RequestInfo": {"context" :"Start '${SERVICE}' via REST"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}'
-        if [ "${SERVICE}" = "ALL" ]; then
+        if [[ "${SERVICE}" == 'ALL' ]]; then
             ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/services/
         else
             ${AMBARI_CURL} -i -X PUT -d "${AMBARI_REQUEST}" ${AMBARI_API}/clusters/${AMBARI_CLUSTER}/services/${SERVICE}

@@ -36,11 +36,13 @@ CONFIGURATION_RECOMMENDATION_FILE='/tmp/configuration_recommendation.json'
 HOST_RECOMMENDATION_FILE='/tmp/host_recommendation.json'
 RECOMMENDATION_ENDPOINT="${AMBARI_API}/stacks/${AMBARI_STACK}/\
 versions/${AMBARI_STACK_VERSION}/recommendations"
+
 JSON_SERVICES_ARRAY="[ \"$(sed 's/ /\",\"/g' <<< ${AMBARI_SERVICES})\" ]"
 JSON_HOST_ARRAY="[ \"$(hostname --fqdn)\",
     $(xargs -n 1 host -Tta <<< ${WORKERS[@]} \
         | awk '{print "\""$1"\""}' \
         | paste -sd,)]"
+
 
 # Make variable substitutions in configurations blueprint.
 subsitute_bash_in_json ${CUSTOM_CONFIGURAITION_FILE}

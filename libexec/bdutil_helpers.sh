@@ -397,3 +397,11 @@ function is_single_node_setup() {
     false
   fi
 }
+
+# Version comparitor. Requires sort -V.
+# version_at_least 1.2.X 1.2 -> True
+# version_at_least 1.2 1.2 -> True
+# version_at_least 1.2 1.2.0 -> False
+function version_at_least {
+  [[ "$2" == "$(echo -e "$1\n$2" | sort -V | head -1)" ]]
+}
