@@ -829,7 +829,7 @@ function create_cluster() {
           --image=${GCE_IMAGE} \
           --network=${GCE_NETWORK} \
           --tags=${GCE_TAGS} \
-          --scopes ${GCE_SERVICE_ACCOUNT_SCOPES[@]//,/ } \
+          --scopes $(export IFS=,; echo "${GCE_SERVICE_ACCOUNT_SCOPES[*]}";) \
           --boot-disk-type=pd-standard \
           ${optional_disk_arg} &
       sleep_for_api_ops
@@ -856,7 +856,7 @@ function create_cluster() {
         --image=${GCE_IMAGE} \
         --network=${GCE_NETWORK} \
         --tags=${GCE_TAGS} \
-        --scopes ${GCE_SERVICE_ACCOUNT_SCOPES[@]//,/ } \
+        --scopes $(export IFS=,; echo "${GCE_SERVICE_ACCOUNT_SCOPES[*]}";) \
         --boot-disk-type=pd-standard \
         ${optional_disk_arg} &
   else
