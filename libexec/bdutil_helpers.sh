@@ -121,14 +121,52 @@ function download_bd_resource() {
   fi
 }
 
+
+# Run apt-get, checking for warnings on STDOUT / STDERR. Warnings are
+# defined as lines starting with "W:".
+#
+# Arguments:
+#   $@ arguments to apt-get
+#
+# Return:
+#   0 if apt-get completed without errors or warnings, non-zero otherwise.
+#
+function apt_get_with_warn_check() {
+  APT_GET_OUT="$(mktemp)"
+  if ! ( set -o pipefail; apt-get "$@" 2>&1 | tee "${APT_GET_OUT}" ); then
+    # apt-get or tee failed.
+    return 1
+  else
+    # Check APT_GET_OUT for warnings and errors. If any lines start with W: or
+    # E: then error out.
+    if grep -e '^[WE]:' "${APT_GET_OUT}"; then
+      return 1
+    fi
+  fi
+
+  # No warnings found, remove our temp file.
+  rm "${APT_GET_OUT}"
+
+  # Apt-get returned OK, no warnings or errors found in output.
+  return 0
+}
+
+# Sentinel file that is written when apt-get update completes succesfully.
 readonly APT_SENTINEL='apt.lastupdate'
 
+# Perform an apt-get update, with retries.
+#
+# Arguments:
+#    None
+# Returns:
+#    zero on success, non-zero on failure.
+#
 function update_apt_get() {
   local update_succeeded=0
   local sleep_time=${BDUTIL_POLL_INTERVAL_SECONDS}
-  local max_attempts=5
+  local max_attempts=30
   for ((i = 1; i <= ${max_attempts}; i++)); do
-    if apt-get -y -qq update; then
+    if apt_get_with_warn_check -y -qq update; then
       update_succeeded=1
       break
     else
@@ -140,7 +178,7 @@ function update_apt_get() {
   if ! (( ${update_succeeded} )); then
     echo 'Final attempt to apt-get update...'
     # Let any final error propagate all the way out to any error traps.
-    apt-get -y -qq update
+    apt_get_with_warn_check -y -qq update
   fi
   touch "${APT_SENTINEL}"
 }
