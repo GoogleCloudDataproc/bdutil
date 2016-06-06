@@ -35,7 +35,7 @@ PROJECT=""
 # example, to whitelist intra-cluster SSH using the cluster prefix.
 
 # GCE settings.
-GCE_IMAGE='debian-7-backports'
+GCE_IMAGE='backports-debian-7-wheezy-v20160531'
 GCE_MACHINE_TYPE='n1-standard-4'
 GCE_ZONE=""
 # When setting a network it's important for all nodes be able to communicate
