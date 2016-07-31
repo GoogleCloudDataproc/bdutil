@@ -359,11 +359,10 @@ function make_cache_cleaner_script() {
   cat <<EOF
 #!/usr/bin/env bash
 
-export HADOOP_LOGFILE='gcs-cache-cleaner.log'
-export HADOOP_ROOT_LOGGER='${GCS_CACHE_CLEANER_LOGGER}'
-
-${HADOOP_INSTALL_DIR}/bin/hadoop ${gc_cleaner} > \
-    ${GCS_CACHE_CLEANER_LOG_DIRECTORY}/gcs-cache-cleaner.out
+# Use timeout to avoid overlapping cron jobs in case one goes long.
+timeout 1790 find /export/hadoop_gcs_connector_metadata_cache/ \
+    -mindepth 1 -mmin +240 -exec rm -df {} \; \
+    &> ${GCS_CACHE_CLEANER_LOG_DIRECTORY}/gcs-cache-cleaner.out
 EOF
 }
 
