@@ -38,7 +38,6 @@ MASTER_ATTACHED_PD_SIZE_GB=1500
 HADOOP_CONF_DIR='/etc/hadoop/conf'
 HADOOP_INSTALL_DIR='/usr/lib/hadoop'
 DEFAULT_FS='hdfs'
-GCS_CACHE_CLEANER_USER='hdfs'
 UPLOAD_FILES+=('platforms/cdh/cdh-core-template.xml')
 USE_ATTACHED_PDS=true
 

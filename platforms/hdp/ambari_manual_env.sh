@@ -67,7 +67,6 @@ normalize_boolean 'AMBARI_PUBLIC'
 # many services require it to be. This is purely advisory.
 DEFAULT_FS='hdfs'
 
-GCS_CACHE_CLEANER_USER='hdfs'
 GCS_CACHE_CLEANER_LOG_DIRECTORY="/var/log/hadoop/${GCS_CACHE_CLEANER_USER}"
 GCS_CACHE_CLEANER_LOGGER='INFO,RFA'
 HADOOP_CONF_DIR="/etc/hadoop/conf"

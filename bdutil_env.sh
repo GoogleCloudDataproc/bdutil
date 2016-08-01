@@ -173,11 +173,6 @@ GCS_CACHE_MASTER_HOSTNAME=''
 # and potentially other gcs-connector-related tasks.
 GCS_ADMIN='gcsadmin'
 
-# The user on whose behalf to run the GCS cache cleaner; not equal to GCS_ADMIN
-# since the user running the cache cleaner should have "Hadoop admin"
-# privileges.
-GCS_CACHE_CLEANER_USER='hadoop'
-
 # Directory in which to place logs produced by running the GCS cache cleaner;
 # only applicable when ENABLE_NFS_GCS_FILE_CACHE is true. This is more
 # descriptive and prescriptive; it must match the HADOOP_LOG_DIR placed inside

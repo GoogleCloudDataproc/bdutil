@@ -344,6 +344,7 @@ function setup_gcs_admin() {
     useradd --system --shell /usr/sbin/nologin -M \
         --home /home/${GCS_ADMIN} --user-group ${GCS_ADMIN}
     chown -R ${GCS_ADMIN}:${GCS_ADMIN} /home/${GCS_ADMIN}
+    usermod -a -G hadoop ${GCS_ADMIN}
   fi
 }
 
@@ -367,7 +368,7 @@ EOF
 }
 
 # Given full path to a cache-cleaner script as $1, prints the crontab entry
-# for running it as user ${GCS_CACHE_CLEANER_USER} twice an hour; caller can
+# for running it as user ${GCS_ADMIN} twice an hour; caller can
 # append the printed contents into an actual crontab to activate it as needed.
 function make_cleaner_crontab() {
   local cleaner=$1
@@ -375,7 +376,7 @@ function make_cleaner_crontab() {
   cat <<EOF
 # Run the ${cleaner} script twice every hour at 7 and 37 minutes past the hour
 # m h dom mon dow user command
-7,37 * * * * ${GCS_CACHE_CLEANER_USER} ${cleaner}
+7,37 * * * * ${GCS_ADMIN} ${cleaner}
 EOF
 }
 
