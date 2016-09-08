@@ -51,8 +51,14 @@ if (( ${INSTALL_GCS_CONNECTOR} )) && \
     readonly GCSADMIN_GID="$(id -g ${GCS_ADMIN})"
     OPTIONS_STRING="(rw,all_squash,anonuid=${GCSADMIN_UID}"
     OPTIONS_STRING="${OPTIONS_STRING},anongid=${GCSADMIN_GID})"
-    echo "${NFS_EXPORT_POINT} *${OPTIONS_STRING} #BDUTIL_HADOOP_EXPORT" >> \
-        /etc/exports
+    EXPORT_CONFIG="${NFS_EXPORT_POINT}"
+
+    # Restrict NFS access to private network source ranges.
+    EXPORT_CONFIG="${EXPORT_CONFIG} 10.0.0.0/8${OPTIONS_STRING}"
+    EXPORT_CONFIG="${EXPORT_CONFIG} 172.16.0.0/12${OPTIONS_STRING}"
+    EXPORT_CONFIG="${EXPORT_CONFIG} 192.168.0.0/16${OPTIONS_STRING}"
+
+    echo "${EXPORT_CONFIG} #BDUTIL_HADOOP_EXPORT" >> /etc/exports
   fi
 
   if [[ -f /usr/lib/systemd/system/nfs-server.service ]] \
