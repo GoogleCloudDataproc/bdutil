@@ -18,8 +18,13 @@ set -e
 
 # Get a list of disks from the metadata server.
 BASE_DISK_URL='http://metadata.google.internal/computeMetadata/v1/instance/disks/'
+MOUNT_TOOL_URL='https://raw.githubusercontent.com/GoogleCloudPlatform/compute-image-packages/legacy/google-startup-scripts/usr/share/google/safe_format_and_mount'
 DISK_PATHS=$(curl_v1_metadata "${BASE_DISK_URL}")
 MOUNTED_DISKS=()
+
+MOUNT_TOOL=/tmp/${MOUNT_TOOL_URL##*/}
+download_bd_resource ${MOUNT_TOOL_URL} ${MOUNT_TOOL}
+chmod a+x ${MOUNT_TOOL}
 
 for DISK_PATH in ${DISK_PATHS}; do
   # Use the metadata server to determine the official index/name of each disk.
@@ -50,7 +55,7 @@ for DISK_PATH in ${DISK_PATHS}; do
   mkdir -p ${DATAMOUNT}
   MOUNTED_DISKS+=(${DATAMOUNT})
   echo "Mounting '${DISK_ID}' under mount point '${DATAMOUNT}'..."
-  MOUNT_TOOL=/usr/share/google/safe_format_and_mount
+
   ${MOUNT_TOOL} -m 'mkfs.ext4 -F' ${DISK_ID} ${DATAMOUNT}
 
   # Idempotently update /etc/fstab

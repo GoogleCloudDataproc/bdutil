@@ -14,13 +14,13 @@
 # limitations under the License.
 
 #TODO(user) support other Linux distributions.
-download_bd_resource \
-    http://archive.cloudera.com/cdh${CDH_VERSION}/debian/wheezy/amd64/cdh/cloudera.list \
-    /etc/apt/sources.list.d/cloudera.list
+ARCHIVE_URL="http://archive.cloudera.com/cdh${CDH_VERSION}/debian/jessie/amd64/cdh"
+cat << EOF > /etc/apt/sources.list.d/cloudera.list
+deb ${ARCHIVE_URL} jessie-cdh${CDH_VERSION} contrib
+deb-src ${ARCHIVE_URL} jessie-cdh${CDH_VERSION} contrib
+EOF
 # TODO(user): fix insecure download of apt-key.
-download_bd_resource \
-    http://archive.cloudera.com/cdh${CDH_VERSION}/debian/wheezy/amd64/cdh/archive.key \
-    /tmp/cloudera.key
+download_bd_resource ${ARCHIVE_URL}/archive.key /tmp/cloudera.key
 apt-key add /tmp/cloudera.key
 
 apt-get update

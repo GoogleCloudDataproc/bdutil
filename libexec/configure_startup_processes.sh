@@ -70,6 +70,8 @@ for DAEMON in "${HADOOP_DAEMONS[@]}"; do
     # If the service relies on the existence of the GCS file cache wait for autofs
     if (( ${INSTALL_GCS_CONNECTOR} && ${ENABLE_NFS_GCS_FILE_CACHE} )) &&
         [[ "${SERVICE}" != 'hdfs' ]]; then
+      # autofs must be installed for insserv on Debian 8
+      install_application "autofs"
       DEPENDENCIES+=' autofs'
     fi
   fi

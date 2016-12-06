@@ -24,7 +24,9 @@ PROJECT=""
 
 # For other values,
 # https://cloud.google.com/sdk/gcloud/reference/compute/instances/create
-GCE_IMAGE='ubuntu-12-04'
+GCE_IMAGE=''
+GCE_IMAGE_FAMILY='ubuntu-1204-lts'
+GCE_IMAGE_PROJECT='ubuntu-os-cloud'
 GCE_MACHINE_TYPE='n1-standard-1'
 GCE_ZONE='us-central1-f'
 # GCE_NETWORK='default'
@@ -43,19 +45,19 @@ MASTER_ATTACHED_PD_TYPE='pd-standard'
 MAPR_CLUSTER_NAME="MapRCluster"
 
 # e.g. 3.0.3, 3.1.0, 4.0.1
-MAPR_VERSION="4.0.2" 
+MAPR_VERSION="4.0.2"
 
 # OPTIONAL (paste the license in this file)
 MAPR_LICENSE="mapr_license.txt"
 
 MAPR_CLUSTER_CONFIGURATION_FILE="node.lst"
-# NOTE: 
+# NOTE:
 # (1) Nodes names MUST have this PREFIX in configuration file (node.lst)
 # (2) Node names MUST have suffixes: -m, -w-0, -w-1, ...
-#     For example, if the PREFIX is 'mapr', 
-#     node names MUST be 'mapr-m', 'mapr-w-0', 'mapr-w-1', ... 
+#     For example, if the PREFIX is 'mapr',
+#     node names MUST be 'mapr-m', 'mapr-w-0', 'mapr-w-1', ...
 PREFIX="mapr"
-# NOTE:  This number MUST equal the number of nodes in the configuration file - 1 
+# NOTE:  This number MUST equal the number of nodes in the configuration file - 1
 #        (i.e. do not count master)
 NUM_WORKERS=3
 
@@ -113,7 +115,7 @@ function evaluate_late_variable_bindings() {
   BDUTIL_GCS_STAGING_DIR="${staging_dir_base}/${MASTER_HOSTNAME}"
 
   MAPR_PROJECT=${PROJECT}
-  MAPR_IMAGE=${GCE_IMAGE}
+  MAPR_IMAGE=${GCE_IMAGE_FAMILY}
   MAPR_MACHINE_TYPE=${GCE_MACHINE_TYPE}
   MAPR_ZONE=${GCE_ZONE}
   NODE_NAME_ROOT=${PREFIX}

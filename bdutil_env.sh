@@ -35,9 +35,15 @@ PROJECT=""
 # example, to whitelist intra-cluster SSH using the cluster prefix.
 
 # GCE settings.
-GCE_IMAGE='https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/backports-debian-7-wheezy-v20160531'
 GCE_MACHINE_TYPE='n1-standard-4'
-GCE_ZONE=""
+GCE_ZONE=''
+# This should be a fully specified URI and will take precedence over other image
+# settings.
+GCE_IMAGE=''
+# These are the normal gcloud compute image flags documented here:
+# https://cloud.google.com/sdk/gcloud/reference/compute/instances/create
+GCE_IMAGE_FAMILY='debian-8'
+GCE_IMAGE_PROJECT='debian-cloud'
 # When setting a network it's important for all nodes be able to communicate
 # with eachother and for SSH connections to be allowed inbound to complete
 # cluster setup and configuration.

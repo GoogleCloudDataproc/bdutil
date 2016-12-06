@@ -337,6 +337,8 @@ function prompt_confirmation() {
       CONFIGBUCKET='${CONFIGBUCKET?}'
       PROJECT='${PROJECT?}'
       GCE_IMAGE='${GCE_IMAGE?}'
+      GCE_IMAGE_PROJECT='${GCE_IMAGE_PROJECT?}'
+      GCE_IMAGE_FAMILY='${GCE_IMAGE_FAMILY?}'
       GCE_ZONE='${GCE_ZONE?}'
       GCE_NETWORK='${GCE_NETWORK?}'
       GCE_TAGS='${GCE_TAGS?}'
@@ -821,12 +823,20 @@ function create_cluster() {
         optional_preemptible_arg="--preemptible"
       fi
 
+      local image_flags=""
+      if [[ -n "${GCE_IMAGE}" ]]; then
+        image_flags="--image=${GCE_IMAGE}"
+      else
+        image_flags="--image-family=${GCE_IMAGE_FAMILY} \
+            --image-project=${GCE_IMAGE_PROJECT}"
+      fi
+
       run_gcloud_compute_cmd \
           instances create \
            ${WORKERS[${i}]} \
           --machine-type=${GCE_MACHINE_TYPE} \
           ${optional_preemptible_arg} \
-          --image=${GCE_IMAGE} \
+          ${image_flags} \
           --network=${GCE_NETWORK} \
           --tags=${GCE_TAGS} \
           --scopes $(export IFS=,; echo "${GCE_SERVICE_ACCOUNT_SCOPES[*]}";) \

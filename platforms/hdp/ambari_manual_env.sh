@@ -32,7 +32,9 @@ import_env hadoop2_env.sh
 # Default to 4 workers plus master for good spreading of master daemons.
 NUM_WORKERS=4
 # Use CentOS instead of Debian.
-GCE_IMAGE='https://www.googleapis.com/compute/v1/projects/centos-cloud/global/images/centos-6-v20160526'
+GCE_IMAGE=''
+GCE_IMAGE_FAMILY='centos-6'
+GCE_IMAGE_PROJECT='centos-cloud'
 
 # Create attached storage
 USE_ATTACHED_PDS=true
