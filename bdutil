@@ -793,6 +793,14 @@ function create_cluster() {
     await_async_jobs 'disks create'
   fi
 
+  local image_flags=""
+  if [[ -n "${GCE_IMAGE}" ]]; then
+    image_flags="--image=${GCE_IMAGE}"
+  else
+    image_flags="--image-family=${GCE_IMAGE_FAMILY} \
+        --image-project=${GCE_IMAGE_PROJECT}"
+  fi
+
   # Start workers and master.
   # For now, we will always auto-create a persistent boot disk and auto-delete
   # it on shutdown; truly persistent volumes will be used as a non-root mount
@@ -821,14 +829,6 @@ function create_cluster() {
       local optional_preemptible_arg=""
       if (( ${i} < NUM_PREEMPTIBLE )); then
         optional_preemptible_arg="--preemptible"
-      fi
-
-      local image_flags=""
-      if [[ -n "${GCE_IMAGE}" ]]; then
-        image_flags="--image=${GCE_IMAGE}"
-      else
-        image_flags="--image-family=${GCE_IMAGE_FAMILY} \
-            --image-project=${GCE_IMAGE_PROJECT}"
       fi
 
       run_gcloud_compute_cmd \
@@ -863,7 +863,7 @@ function create_cluster() {
         instances create \
         ${MASTER_HOSTNAME} \
         --machine-type=${GCE_MASTER_MACHINE_TYPE} \
-        --image=${GCE_IMAGE} \
+        ${image_flags} \
         --network=${GCE_NETWORK} \
         --tags=${GCE_TAGS} \
         --scopes $(export IFS=,; echo "${GCE_SERVICE_ACCOUNT_SCOPES[*]}";) \
