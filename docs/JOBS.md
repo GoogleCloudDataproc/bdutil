@@ -25,7 +25,7 @@ Once you've set up a Hadoop cluster and have written or ported a job, you can ru
 First, validate that your cluster is set up, and that you can access your data. Navigate to the command line to execute the following commands.
 
 Type `./bdutil shell` to SSH into the master node of the Hadoop cluster.
-Type `hadoop fs -ls .` to check the cluster status. If data outputs, the cluster is set up correctly.
+Type `hadoop fs -ls /` to check the cluster status. If data outputs, the cluster is set up correctly.
 
 ### Running the job
 
@@ -41,8 +41,8 @@ To run the WordCount job:
 Note that when using Google Cloud Storage as your [default file system](QUICKSTART.md), input automatically resolves to `gs://$<CONFIGBUCKET>/input`.
 1. Copy any file from the web, such as the following example text from Apache, by typing the following command: `curl http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html > setup.html`.
 1. Copy one or more text files into the `input` directory. Using the same Apache text in the previous step, type the following command: `hadoop fs -copyFromLocal setup.html input`.
-1. Type `cd /hadoop-install/share/hadoop/mapreduce` to navigate to the Hadoop install directory.
-1. Type `hadoop jar share/hadoop/mapreduce/hadoop-*-examples-*.jar wordcount input output` to run the job on data in the input directory, and place results in the output directory.
+1. Type `cd /home/hadoop/hadoop-install/` to navigate to the Hadoop install directory.
+1. Type `hadoop jar hadoop-examples-*.jar wordcount input output` to run the job on data in the input directory, and place results in the output directory.
 
 ### Checking job status
 
