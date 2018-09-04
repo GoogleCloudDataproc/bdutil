@@ -1,3 +1,5 @@
+# This project has been deprecated. Please use [Google Cloud Dataproc](https://cloud.google.com/dataproc) to create managed Apache Hadoop and Apache Spark instances on [Google Compute Engine](https://cloud.google.com/compute).
+
 # bdutil
 
 bdutil is a command-line script used to manage Apache Hadoop and Apache Spark instances on [Google Compute Engine](https://cloud.google.com/compute). bdutil manages deployment, configuration, and shutdown of your Hadoop instances.
